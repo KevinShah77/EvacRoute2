@@ -1,0 +1,12 @@
+{
+  "name": "evacroute-emergency-response-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "frontend:install": "npm install --prefix frontend",
+    "frontend:dev": "npm run dev --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "backend:test": "pytest backend/tests/test_api.py",
+    "test": "npm run backend:test"
+  }
+}
