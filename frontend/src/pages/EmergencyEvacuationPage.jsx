@@ -515,7 +515,12 @@ export default function EmergencyEvacuationPage() {
           </div>
 
           {/* ============================================================== */}
-          {/* CARD 2: EMERGENCY STATUS (MATCHING REFERENCE IMAGE)             */}
+          {/* CARD 2: DISTRESS SIGNAL (RESCUED DIRECT DISPATCH - UNDER VOICE) */}
+          {/* ============================================================== */}
+          <DistressSignalCard />
+
+          {/* ============================================================== */}
+          {/* CARD 3: EMERGENCY STATUS (MATCHING REFERENCE IMAGE)             */}
           {/* ============================================================== */}
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             {/* Dark Navy Header (Reference Image Style) */}
@@ -730,14 +735,7 @@ export default function EmergencyEvacuationPage() {
       </div>
 
       {/* ============================================================== */}
-      {/* 5. STUDENT DISTRESS SIGNAL CARD (RESCUE DISPATCH)              */}
-      {/* ============================================================== */}
-      <div className="pt-2">
-        <DistressSignalCard />
-      </div>
-
-      {/* ============================================================== */}
-      {/* 6. TURN-BY-TURN WRITTEN INSTRUCTIONS MODAL                     */}
+      {/* 5. TURN-BY-TURN WRITTEN INSTRUCTIONS MODAL                     */}
       {/* ============================================================== */}
       {isInstructionsModalOpen && (
         <div 
