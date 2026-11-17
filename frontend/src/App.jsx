@@ -31,8 +31,8 @@ export default function App() {
               
               <Navbar />
               
-              {/* Content area offset by desktop sidebar (w-64) and fixed top header (h-16) */}
-              <div className="md:pl-64 flex flex-col flex-1 min-h-screen pt-16 pb-16 md:pb-0">
+              {/* Full-width content area with overhead top header (h-16) */}
+              <div className="flex flex-col flex-1 min-h-screen pt-16">
                 <EmergencyBanner />
                 <SosModal />
 
