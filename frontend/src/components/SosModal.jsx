@@ -62,6 +62,88 @@ export default function SosModal({ isOpen, onClose }) {
   const roomNode = topology?.nodes?.find(n => n.id === userLocationNode);
   const rawLabel = roomNode?.label || userLocationNode || '208';
   const roomLabel = cleanRoomNumber(rawLabel) || 'Room 208';
+  const initialRoomNumber = cleanRoomNumber(rawLabel) 
+    ? cleanRoomNumber(rawLabel).replace(/^Room\s*/i, '') 
+    : (userLocationNode ? userLocationNode.replace(/^(F\d+|GF)[-_ ]+/i, '') : '208');
+
+  // Option to write custom room number and adjust floor for broadcast
+  const [customRoom, setCustomRoom] = useState(initialRoomNumber);
+  const [customFloor, setCustomFloor] = useState(() => selectedFloor || 'Floor 2');
+
+  // Keep synced if userLocationNode changes
+  useEffect(() => {
+    if (userLocationNode) {
+      const node = topology?.nodes?.find(n => n.id === userLocationNode);
+      const cleaned = cleanRoomNumber(node?.label || userLocationNode)?.replace(/^Room\s*/i, '') || userLocationNode.replace(/^(F\d+|GF)[-_ ]+/i, '');
+      if (cleaned) {
+        setCustomRoom(cleaned);
+      }
+      if (node?.floor) {
+        setCustomFloor(node.floor);
+      } else if (selectedFloor) {
+        setCustomFloor(selectedFloor);
+      }
+    }
+  }, [userLocationNode, topology, selectedFloor]);
+
+  // Deduce floor, label, and nodeId from room string
+  const deduceFloorAndLocation = (roomStr, currentFloor) => {
+    const trimmed = (roomStr || '').trim();
+    if (!trimmed) {
+      return { 
+        floor: currentFloor || selectedFloor || 'Floor 2', 
+        label: roomLabel || 'Room 208', 
+        nodeId: userLocationNode || 'F2-208' 
+      };
+    }
+
+    const allNodes = topology?.nodes || [];
+
+    // Exact or partial match on node id / label
+    const matchedNode = allNodes.find(n => {
+      const cleanId = n.id.replace(/^(F\d+|GF)[-_ ]+/i, '').toLowerCase();
+      const cleanLbl = (n.label || '').toLowerCase();
+      const t = trimmed.toLowerCase();
+      return cleanId === t || n.id.toLowerCase() === t || cleanLbl.includes(t);
+    });
+
+    if (matchedNode) {
+      return {
+        floor: matchedNode.floor || currentFloor || selectedFloor || 'Floor 2',
+        label: cleanRoomNumber(matchedNode.label) || (trimmed.toLowerCase().startsWith('room') ? trimmed : `Room ${trimmed}`),
+        nodeId: matchedNode.id
+      };
+    }
+
+    // Heuristic floor parsing from digits
+    let detectedFloor = currentFloor || selectedFloor || 'Floor 2';
+    const numMatch = trimmed.match(/\b\d+\b/);
+    if (numMatch) {
+      const num = parseInt(numMatch[0], 10);
+      if (num >= 400 && num < 500) detectedFloor = 'Floor 4';
+      else if (num >= 300 && num < 400) detectedFloor = 'Floor 3';
+      else if (num >= 200 && num < 300) detectedFloor = 'Floor 2';
+      else if (num >= 100 && num < 200) detectedFloor = 'Floor 1';
+      else if (num < 100) detectedFloor = 'Ground';
+    } else if (/^gf/i.test(trimmed) || /ground/i.test(trimmed)) {
+      detectedFloor = 'Ground';
+    }
+
+    return {
+      floor: detectedFloor,
+      label: trimmed.toLowerCase().startsWith('room') ? trimmed : `Room ${trimmed}`,
+      nodeId: null
+    };
+  };
+
+  const handleRoomChange = (e) => {
+    const val = e.target.value;
+    setCustomRoom(val);
+    const parsed = deduceFloorAndLocation(val, customFloor);
+    if (parsed.floor && parsed.floor !== customFloor) {
+      setCustomFloor(parsed.floor);
+    }
+  };
 
   if (!modalOpen) return null;
 
@@ -88,21 +170,26 @@ export default function SosModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    if (!isSafetyOfficer) {
-      console.warn('Unauthorized SOS transmission attempt blocked. Only Safety Officers can broadcast SOS.');
-      return;
-    }
     setSubmitting(true);
     try {
+      const parsedLoc = deduceFloorAndLocation(customRoom, customFloor);
+      const floorToSend = customFloor || parsedLoc.floor || 'Floor 2';
+      const locationToSend = parsedLoc.label || (customRoom.trim() ? `Room ${customRoom.trim()}` : 'Room 208');
+      const nodeToSend = parsedLoc.nodeId || userLocationNode || 'F2-208';
+
+      const defaultDetails = situation === 'structural'
+        ? `EMERGENCY S.O.S. BROADCAST: Structural damage reported at ${floorToSend} • ${locationToSend}. Evacuate immediately.`
+        : `EMERGENCY S.O.S. BROADCAST: Active fire reported at ${floorToSend} • ${locationToSend}. Evacuate immediately.`;
+
       await sendSosSignal({
-        floor: selectedFloor || 'Floor 2',
-        location: roomLabel,
-        node_id: userLocationNode || 'F2-208',
+        floor: floorToSend,
+        location: locationToSend,
+        node_id: nodeToSend,
         situation: situation || 'fire',
-        details: details.trim() || undefined,
-        user_name: user?.full_name || 'Chief Safety Officer Sarah Jenkins',
-        user_role: 'admin',
-        contact: user?.phone || '+1-555-019-SAFE'
+        details: details.trim() || defaultDetails,
+        user_name: user?.full_name || (isSafetyOfficer ? 'Chief Safety Officer Sarah Jenkins' : 'Alex Chen'),
+        user_role: isSafetyOfficer ? 'admin' : 'student',
+        contact: user?.phone || (isSafetyOfficer ? '+1-555-019-SAFE' : '+1-555-014-STUD')
       });
       setModalMode('view');
     } catch (err) {
@@ -301,21 +388,74 @@ export default function SosModal({ isOpen, onClose }) {
             </div>
           </div>
         ) : (
-          /* ================= MODAL MODE: BROADCAST NEW S.O.S. (SAFETY OFFICER ONLY) ================= */
+          /* ================= MODAL MODE: BROADCAST NEW S.O.S. ================= */
           <div className="py-4 space-y-4">
-            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-              <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Originating Fixed Location</span>
-                <span className="font-bold text-slate-900">{selectedFloor || 'Floor 2'} • {roomLabel}</span>
+            
+            {/* Originating Incident Location with Room Number Input */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-2.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 rounded-md bg-red-100 text-red-700 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-slate-800 text-xs font-bold uppercase tracking-wider">
+                    Originating Incident Location
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalMode('view')}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Message</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setModalMode('view')}
-                className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1 cursor-pointer"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Message</span>
-              </button>
+
+              {/* Room Number & Floor Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
+                {/* 1. Room Number Input */}
+                <div className="sm:col-span-2 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-700">
+                      Room Number:
+                    </label>
+                    <span className="text-[10px] text-slate-400">e.g. 205, 208, 214, Lab</span>
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={customRoom}
+                    onChange={handleRoomChange}
+                    placeholder="Enter room number (e.g. 208, 205)..."
+                    className="w-full bg-white border border-slate-200 focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors shadow-2xs"
+                  />
+                </div>
+
+                {/* 2. Floor Selector */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-700 block">
+                    Floor:
+                  </label>
+                  <select
+                    value={customFloor}
+                    onChange={(e) => setCustomFloor(e.target.value)}
+                    className="w-full bg-white border border-slate-200 focus:border-red-500 rounded-lg px-2.5 py-2 text-xs sm:text-sm text-slate-900 font-semibold outline-none transition-colors shadow-2xs cursor-pointer"
+                  >
+                    {['Ground', 'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4'].map(f => (
+                      <option key={f} value={f}>{f}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Broadcast Target Summary Pill */}
+              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/80">
+                <span>Broadcasting Alert Origin:</span>
+                <span className="font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-2xs">
+                  {customFloor} • {deduceFloorAndLocation(customRoom, customFloor).label}
+                </span>
+              </div>
             </div>
 
             {/* Emergency Situation Selector */}
