@@ -4,7 +4,6 @@ import VoiceNavPanel from '../components/VoiceNavPanel';
 import LocationSelector from '../components/LocationSelector';
 import DistressSignalCard from '../components/DistressSignalCard';
 import QrScannerModal from '../components/QrScannerModal';
-import SosModal from '../components/SosModal';
 import { useEmergency } from '../context/EmergencyContext';
 import { useAuth } from '../context/AuthContext';
 import { cleanRoomNumber } from '../context/VoiceNavigationContext';
@@ -592,9 +591,6 @@ export default function EmergencyEvacuationPage() {
         isOpen={isQrModalOpen}
         onClose={() => setIsQrModalOpen(false)}
       />
-
-      {/* Global SOS Emergency Modal */}
-      <SosModal />
 
     </div>
   );

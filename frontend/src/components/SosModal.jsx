@@ -109,7 +109,7 @@ export default function SosModal({ isOpen, onClose }) {
               </p>
             </div>
           </div>
-          <button onClick={handleClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.06] transition-colors">
+          <button onClick={handleClose} title="Close SOS Modal" aria-label="Close SOS Modal" className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
