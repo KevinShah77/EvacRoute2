@@ -2,10 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --evac-paper: #080c14;
+  --evac-card: rgba(15, 23, 42, 0.78);
+  --evac-card-solid: #0f172a;
+  --evac-card-hover: rgba(30, 41, 59, 0.85);
+  --evac-soft: rgba(30, 41, 59, 0.55);
+  --evac-rule: rgba(255, 255, 255, 0.08);
+  --evac-rule-subtle: rgba(255, 255, 255, 0.04);
+  --evac-ink: #f8fafc;
+  --evac-muted: #94a3b8;
+  --evac-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+  --evac-shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 32px 64px -24px rgba(0, 0, 0, 0.75);
+}
+
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden;
+    background-color: var(--evac-paper);
+    color: var(--evac-ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* Glassmorphic Card Styling (Mallow inspired) */
+.evac-card {
+  background: var(--evac-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--evac-rule);
+  box-shadow: var(--evac-shadow);
+  border-radius: 1.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.evac-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Pill Badges & Chips */
+.evac-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid var(--evac-rule);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Subtle Inset Top Highlight for Buttons (Mallow style) */
+.evac-btn-inset {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background-color 0.15s ease;
+}
+
+.evac-btn-inset:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.evac-btn-inset:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* Animated dashed line for evacuation route */
@@ -20,18 +83,34 @@
   animation: pathDash 1.2s linear infinite;
 }
 
+/* Ambient Pulse Animations */
+@keyframes evacPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.4;
+  }
+}
+
+.animate-evac-pulse {
+  animation: evacPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #080c14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
+  background: #1e293b;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #334155;
 }

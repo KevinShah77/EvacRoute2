@@ -119,13 +119,13 @@ export default function QrScannerModal({ isOpen, onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-700 max-w-lg w-full rounded-2xl shadow-2xl overflow-hidden p-6 relative animate-in zoom-in-95 duration-200 text-slate-100">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="evac-card max-w-lg w-full rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden p-6 relative animate-in zoom-in-95 duration-200 text-slate-100">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <QrCode className="w-5 h-5" />
             </div>
             <div>
@@ -133,18 +133,18 @@ export default function QrScannerModal({ isOpen, onClose }) {
               <p className="text-xs text-slate-400">Indoor positioning & assembly area check-in</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1">
+          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.06] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 my-4 text-xs">
+        <div className="flex items-center bg-slate-950/80 p-1 rounded-full border border-white/[0.08] my-4 text-xs">
           <button
             onClick={() => { setActiveTab('checkin'); setStatusMessage(null); }}
-            className={`flex-1 py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-2 ${
+            className={`flex-1 py-2 rounded-full font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'checkin'
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 evac-btn-inset'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -153,9 +153,9 @@ export default function QrScannerModal({ isOpen, onClose }) {
           </button>
           <button
             onClick={() => { setActiveTab('location'); setStatusMessage(null); }}
-            className={`flex-1 py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-2 ${
+            className={`flex-1 py-2 rounded-full font-bold transition-all flex items-center justify-center space-x-2 ${
               activeTab === 'location'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 evac-btn-inset'
                 : 'text-slate-400 hover:text-white'
             }`}
           >

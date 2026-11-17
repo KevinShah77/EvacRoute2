@@ -249,51 +249,60 @@ export default function EmergencyEvacuationPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-5 space-y-3 sm:space-y-5">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-4 sm:space-y-6">
       
-      {/* Top Banner / Heading & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+      {/* Top Banner / Heading & Action Bar - Mallow Clean Styling */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-white/[0.06]">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center space-x-2.5">
-            <span>Evacuation Map</span>
-            {activeEmergency && (
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white uppercase tracking-wider animate-pulse">
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center space-x-2.5">
+              <span>Evacuation Map</span>
+            </h1>
+            {activeEmergency ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-red-600/90 text-white uppercase tracking-wider shadow-sm shadow-red-500/40 animate-pulse border border-red-400/30">
                 Active Protocol
               </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/60 text-emerald-400 uppercase tracking-wider border border-emerald-500/30">
+                Normal Operations
+              </span>
             )}
-          </h1>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            Real-time multi-floor life-safety guidance and safe egress routing
+          </p>
         </div>
 
         {/* Action Controls: Route Selector, Escape Simulation, SOS Button & Check-In */}
         <div className="flex flex-wrap items-center gap-2">
 
-          {/* Quick Route Selector: Primary vs Alt Route */}
+          {/* Quick Route Selector: Primary vs Alt Route Pills */}
           {routeResult?.backup_path_node_ids && routeResult.backup_path_node_ids.length > 0 && (
-            <div className="flex items-center bg-slate-900 border border-slate-700/80 rounded-xl p-1 shadow-md">
+            <div className="flex items-center bg-slate-900/80 backdrop-blur-md border border-white/[0.08] rounded-full p-1 shadow-md">
               <button
                 type="button"
                 onClick={() => setSelectedRoute('primary')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 ${
                   selectedRoute === 'primary'
                     ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Select Primary Recommended Route"
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span>Primary</span>
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedRoute('backup')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 ${
                   selectedRoute === 'backup'
                     ? 'bg-amber-600 text-white shadow-md shadow-amber-500/30'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Select Alternative Safe Route"
               >
-                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                 <span>Alt Route</span>
               </button>
             </div>
@@ -303,10 +312,10 @@ export default function EmergencyEvacuationPage() {
           {!simRunning ? (
             <button
               onClick={handleStartSimulation}
-              className={`flex items-center space-x-2 px-3.5 py-2 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg transition-all hover:scale-105 ${
+              className={`flex items-center space-x-2 px-4 py-2 text-white rounded-full text-xs font-black uppercase tracking-wider shadow-lg transition-all evac-btn-inset ${
                 selectedRoute === 'backup'
-                  ? 'bg-amber-600 hover:bg-amber-500 active:bg-amber-700 shadow-amber-600/30'
-                  : 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 shadow-emerald-600/30'
+                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 shadow-amber-600/30 ring-1 ring-amber-400/40'
+                  : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/30 ring-1 ring-emerald-400/40'
               }`}
               title={selectedRoute === 'backup' ? 'Run Alt Route Simulation on Map' : 'Run Escape Simulation on Map'}
             >
@@ -318,10 +327,10 @@ export default function EmergencyEvacuationPage() {
               </span>
             </button>
           ) : (
-            <div className="flex items-center space-x-1.5 bg-slate-900 border border-emerald-500/60 rounded-xl p-1 shadow-lg">
+            <div className="flex items-center space-x-1.5 bg-slate-900/90 backdrop-blur-md border border-white/[0.1] rounded-full p-1 shadow-lg">
               <button
                 onClick={() => setSimRunning(false)}
-                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1"
+                className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-full text-xs font-bold flex items-center space-x-1 shadow-sm"
                 title="Pause Simulation"
               >
                 <Pause className="w-3.5 h-3.5 fill-white" />
@@ -329,19 +338,19 @@ export default function EmergencyEvacuationPage() {
               </button>
               <button
                 onClick={handleResetSimulation}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold"
+                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full text-xs font-semibold"
                 title="Reset Simulation"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setSimSpeed(s => s === 1 ? 2 : 1)}
-                className="px-2 py-1 bg-slate-800 text-cyan-400 font-mono text-[11px] font-bold rounded-lg"
+                className="px-2.5 py-1 bg-slate-800 text-cyan-400 font-mono text-[11px] font-bold rounded-full"
                 title="Toggle Speed"
               >
                 {simSpeed}x
               </button>
-              <span className="text-[11px] font-mono text-emerald-400 font-bold px-2">
+              <span className="text-[11px] font-mono text-emerald-400 font-bold px-2.5">
                 {overallProgress}%
               </span>
             </div>
@@ -350,17 +359,17 @@ export default function EmergencyEvacuationPage() {
           {/* Prominent SOS Button */}
           <button
             onClick={openSosModal}
-            className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-red-600/40 animate-pulse transition-all ring-2 ring-red-400"
+            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white rounded-full text-xs font-black uppercase tracking-wider shadow-lg shadow-red-600/35 animate-pulse transition-all evac-btn-inset ring-1 ring-red-400/50"
             title="Send Emergency Distress Signal"
           >
-            <AlertOctagon className="w-4 h-4 fill-white text-red-600" />
+            <AlertOctagon className="w-4 h-4 fill-white text-red-600 flex-shrink-0" />
             <span>EMERGENCY S.O.S.</span>
           </button>
 
           {/* Safe Arrival Check-In */}
           <button
             onClick={() => setIsQrModalOpen(true)}
-            className="flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold shadow-md transition-all"
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/[0.08] rounded-full text-xs font-semibold shadow-md transition-all hover:border-white/20"
             title="Confirm Safe Arrival at Assembly Point"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -368,7 +377,7 @@ export default function EmergencyEvacuationPage() {
           </button>
 
           {/* Dispatch Phone Pill */}
-          <div className="hidden xl:flex items-center space-x-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300">
+          <div className="hidden xl:flex items-center space-x-2 bg-slate-900/70 border border-white/[0.08] rounded-full px-3.5 py-2 text-xs text-slate-300">
             <PhoneCall className="w-3.5 h-3.5 text-red-400" />
             <span>Dispatch: <strong className="text-white">+1-555-019-SAFE</strong></span>
           </div>
@@ -388,41 +397,41 @@ export default function EmergencyEvacuationPage() {
             simulationCoord={markerPos}
           />
 
-          {/* Turn-by-Turn Written Instructions Below the Map */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+          {/* Turn-by-Turn Written Instructions Below the Map - Mallow Clean Card */}
+          <div className="evac-card p-4 sm:p-6 space-y-4">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-              <div className="flex items-center space-x-2.5">
-                <div className="p-2 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.07] pb-3.5">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 text-blue-400 border border-blue-500/30 flex items-center justify-center flex-shrink-0 shadow-sm">
                   <Navigation className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center space-x-2">
+                  <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center space-x-2 flex-wrap">
                     <span>Turn-by-Turn Evacuation Instructions</span>
                     {simRunning && (
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider animate-pulse ${
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-wider animate-pulse shadow-sm ${
                         selectedRoute === 'backup'
-                          ? 'bg-amber-950 border-amber-500 text-amber-300'
-                          : 'bg-emerald-950 border-emerald-500 text-emerald-300'
+                          ? 'bg-amber-950/80 border-amber-500/80 text-amber-300 shadow-amber-500/20'
+                          : 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300 shadow-emerald-500/20'
                       }`}>
                         Simulating {selectedRoute === 'backup' ? 'Alt ' : ''}Step {currentStepNum}
                       </span>
                     )}
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Step-by-step guidance navigating to {destinationExitLabel} {selectedRoute === 'backup' ? '(via Alt Safe Route)' : ''} avoiding all hazards
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Step-by-step guidance navigating to <strong>{destinationExitLabel}</strong> {selectedRoute === 'backup' ? '(via Alt Safe Route)' : ''} avoiding all hazards
                   </p>
                 </div>
               </div>
 
               {routeResult && (
                 <div className="flex items-center space-x-2 text-xs">
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800">
+                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-950/60 border border-white/[0.08] shadow-sm">
                     <Clock className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="text-slate-400">Est. Time:</span>
                     <strong className="text-white font-mono">{routeResult.rset_formatted}</strong>
                   </div>
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800">
+                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-950/60 border border-white/[0.08] shadow-sm">
                     <Footprints className="w-3.5 h-3.5 text-blue-400" />
                     <span className="text-slate-400">Total:</span>
                     <strong className="text-white font-mono">{routeResult.total_distance_meters} m</strong>
@@ -439,18 +448,18 @@ export default function EmergencyEvacuationPage() {
                   return (
                     <div
                       key={idx}
-                      className={`p-3 rounded-xl border transition-all flex items-start justify-between gap-3 ${
+                      className={`p-3.5 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
                         isCurrentActiveStep
-                          ? 'bg-blue-950/60 border-blue-500 shadow-md shadow-blue-900/30 ring-1 ring-blue-400'
-                          : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                          ? 'bg-blue-950/50 border-blue-500/80 shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
+                          : 'bg-slate-950/50 border-white/[0.06] hover:border-white/[0.14] hover:bg-slate-900/40'
                       }`}
                     >
                       <div className="flex items-start space-x-3 min-w-0">
                         {/* Step Number / Icon Badge */}
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black ${
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black shadow-sm ${
                           isCurrentActiveStep
-                            ? 'bg-blue-600 text-white animate-pulse'
-                            : 'bg-slate-800 text-slate-300 border border-slate-700'
+                            ? 'bg-blue-600 text-white shadow-blue-500/40 animate-pulse'
+                            : 'bg-slate-900 text-slate-300 border border-white/[0.08]'
                         }`}>
                           {st.step_number || idx + 1}
                         </div>
@@ -463,7 +472,7 @@ export default function EmergencyEvacuationPage() {
                               {st.short_direction || 'Advance Safely'}
                             </span>
                             {st.floor && (
-                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-300 border border-white/[0.06]">
                                 {st.floor}
                               </span>
                             )}
@@ -475,11 +484,11 @@ export default function EmergencyEvacuationPage() {
                       </div>
 
                       {/* Distance & Safe Status Pill */}
-                      <div className="flex flex-col items-end flex-shrink-0 space-y-1">
-                        <span className="text-[11px] font-mono font-bold text-slate-300 bg-slate-800/80 px-2 py-0.5 rounded">
+                      <div className="flex flex-col items-end flex-shrink-0 space-y-1.5">
+                        <span className="text-[11px] font-mono font-bold text-slate-300 bg-slate-900/80 border border-white/[0.08] px-2.5 py-0.5 rounded-full">
                           {st.distance_meters > 0 ? `${st.distance_meters} m` : 'Start'}
                         </span>
-                        <span className="text-[10px] text-emerald-400 font-semibold flex items-center space-x-1">
+                        <span className="text-[10px] text-emerald-400 font-semibold flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-500/30">
                           <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                           <span>Clear</span>
                         </span>

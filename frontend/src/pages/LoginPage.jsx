@@ -45,13 +45,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+      <div className="max-w-md w-full evac-card rounded-3xl p-8 border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] relative overflow-hidden">
         
         {/* Subtle decorative glow */}
         <div className="absolute -top-16 -right-16 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="text-center mb-6">
-          <div className="inline-flex p-3 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 mb-3">
+          <div className="inline-flex p-3 rounded-2xl bg-blue-500/10 border border-blue-400/20 text-blue-400 mb-3 shadow-sm">
             <ShieldAlert className="w-8 h-8" />
           </div>
           <h2 className="text-2xl font-extrabold text-white tracking-tight">
@@ -63,27 +63,27 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-950/80 border border-red-600 text-red-200 text-xs">
+          <div className="mb-4 p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs">
             {error}
           </div>
         )}
 
         {/* 1-Click Evaluation Login Buttons */}
-        <div className="mb-6 pb-6 border-b border-slate-800">
+        <div className="mb-6 pb-6 border-b border-white/[0.06]">
           <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 text-center">
             One-Click Login:
           </div>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => handleQuickLogin('student')}
-              className="px-3 py-2.5 rounded-xl bg-blue-950/80 hover:bg-blue-900 border border-blue-600/40 text-blue-200 text-xs font-semibold flex items-center justify-center space-x-2 transition-all shadow"
+              className="evac-pill evac-btn-inset px-3 py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold flex items-center justify-center space-x-2 transition-all shadow-sm"
             >
               <User className="w-4 h-4 text-blue-400" />
               <span>Campus Occupant</span>
             </button>
             <button
               onClick={() => handleQuickLogin('admin')}
-              className="px-3 py-2.5 rounded-xl bg-purple-950/80 hover:bg-purple-900 border border-purple-600/40 text-purple-200 text-xs font-semibold flex items-center justify-center space-x-2 transition-all shadow"
+              className="evac-pill evac-btn-inset px-3 py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-400/30 text-purple-200 text-xs font-semibold flex items-center justify-center space-x-2 transition-all shadow-sm"
             >
               <ShieldAlert className="w-4 h-4 text-purple-400" />
               <span>Safety Officer</span>
@@ -101,7 +101,7 @@ export default function LoginPage() {
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white"
+                className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3 py-2.5 text-white placeholder-slate-500 outline-none focus:border-blue-400"
                 placeholder="e.g. Alex Chen"
               />
             </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-slate-500 outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-slate-500 outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function LoginPage() {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3 py-2 text-white outline-none focus:border-blue-400"
                 >
                   <option value="student">Campus Occupant</option>
                   <option value="admin">Safety Officer</option>
@@ -154,7 +154,7 @@ export default function LoginPage() {
                   type="text"
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3 py-2 text-white outline-none focus:border-blue-400"
                 />
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 transition-all mt-2"
+            className="evac-btn-inset w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-xl font-bold shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 transition-all mt-2 cursor-pointer"
           >
             <span>{loading ? 'Authenticating...' : isRegistering ? 'Register Account' : 'Sign In'}</span>
             <ArrowRight className="w-4 h-4" />

@@ -174,11 +174,11 @@ export default function SimulationDemoPage() {
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 space-y-4">
       
       {/* Simulation Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 evac-card p-4 sm:p-5 rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)]">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center space-x-2">
             <span>Escape Simulation</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/30 text-blue-400 border border-blue-500/40 uppercase">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-400/20 uppercase">
               1-Click
             </span>
           </h1>
@@ -195,7 +195,7 @@ export default function SimulationDemoPage() {
                 if (simCompleted) handleReset();
                 setSimRunning(true);
               }}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-emerald-600/30 transition-all hover:scale-105"
+              className="evac-btn-inset px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
             >
               <Play className="w-4 h-4 fill-white" />
               <span>{simCompleted ? 'Replay Simulation' : 'Start Escape Simulation'}</span>
@@ -203,7 +203,7 @@ export default function SimulationDemoPage() {
           ) : (
             <button
               onClick={() => setSimRunning(false)}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-amber-600/30 transition-all"
+              className="evac-btn-inset px-5 py-2.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-amber-600/30 transition-all cursor-pointer"
             >
               <Pause className="w-4 h-4 fill-white" />
               <span>Pause</span>
@@ -212,14 +212,14 @@ export default function SimulationDemoPage() {
 
           <button
             onClick={handleReset}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 shadow-md transition-all"
+            className="p-2.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-white/[0.08] shadow-md transition-all cursor-pointer"
             title="Reset to Start"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
 
           {/* Speed Multiplier */}
-          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs">
+          <div className="flex items-center bg-slate-950/80 border border-white/[0.08] rounded-xl p-1 text-xs">
             <span className="text-slate-500 font-bold px-1.5 flex items-center space-x-1">
               <Gauge className="w-3 h-3" />
               <span className="hidden sm:inline">Speed:</span>
@@ -228,9 +228,9 @@ export default function SimulationDemoPage() {
               <button
                 key={spd}
                 onClick={() => setSimSpeed(spd)}
-                className={`px-2 py-0.5 rounded-lg font-mono font-bold text-[11px] transition-all ${
+                className={`px-2 py-0.5 rounded-lg font-mono font-bold text-[11px] transition-all cursor-pointer ${
                   simSpeed === spd
-                    ? 'bg-blue-600 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm evac-btn-inset'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -242,19 +242,19 @@ export default function SimulationDemoPage() {
       </div>
 
       {/* Progress & Live Telemetry Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="evac-card rounded-2xl p-3 border border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5 bg-slate-950 border border-slate-800 px-2.5 py-1.5 rounded-xl">
+          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
             <span className="text-slate-400">Step:</span>
             <span className="text-white font-mono font-bold">{currentStepNum} / {pathNodes.length}</span>
           </div>
 
-          <div className="flex items-center space-x-1.5 bg-slate-950 border border-slate-800 px-2.5 py-1.5 rounded-xl">
+          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
             <span className="text-slate-400">Time:</span>
             <span className="text-emerald-400 font-mono font-bold">{elapsedTime}s</span>
           </div>
 
-          <div className="flex items-center space-x-1.5 bg-slate-950 border border-slate-800 px-2.5 py-1.5 rounded-xl">
+          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
             <span className="text-slate-400">Progress:</span>
             <span className="text-blue-400 font-mono font-bold">{overallProgress}%</span>
           </div>

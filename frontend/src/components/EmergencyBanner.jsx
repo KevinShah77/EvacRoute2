@@ -104,7 +104,7 @@ export default function EmergencyBanner() {
 
       {/* Floating Emergency Toast Notification Pop-Up (Fully responsive on phone & desktop) */}
       {notificationToast && (
-        <div className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-5 sm:max-w-md z-50 p-3.5 sm:p-4 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in slide-in-from-bottom duration-300 bg-slate-900/95 border-red-500/70 text-slate-100 ring-1 ring-red-500/30">
+        <div className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-5 sm:max-w-md z-50 p-3.5 sm:p-4 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] border backdrop-blur-xl animate-in slide-in-from-bottom duration-300 evac-card border-red-500/50 text-slate-100 ring-1 ring-red-500/30">
           <div className="flex items-start justify-between gap-2.5">
             <div className="flex items-start space-x-2.5 sm:space-x-3 min-w-0">
               <div className={`p-2 rounded-xl mt-0.5 flex-shrink-0 ${
