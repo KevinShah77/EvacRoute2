@@ -15,6 +15,14 @@ class Settings:
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DB_PATH}")
     
+    # CORS
+    CORS_ORIGINS: list = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+    
     # Security
     JWT_SECRET: str = os.getenv("JWT_SECRET", "evacroute_emergency_jwt_super_secret_key_2026_campus_safety_protocol")
     JWT_ALGORITHM: str = "HS256"
