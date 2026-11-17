@@ -10,15 +10,12 @@ import {
   AlertOctagon,
   AlertTriangle,
   Flame,
-  MapPin,
   ShieldCheck,
   Building2,
   Landmark,
   ChevronDown,
   Menu,
   X,
-  HelpCircle,
-  Settings,
   User,
   ExternalLink
 } from 'lucide-react';
@@ -62,15 +59,11 @@ export default function Navbar({ onOpenCheckinModal }) {
     'West Campus Annex'
   ];
 
-  // Primary sidebar navigation items matching reference design:
-  // Emergency | Map View | Report Incident | My Location | Settings | Help & Support
+  // Primary sidebar navigation items:
   const sidebarLinks = [
     { to: '/emergency', label: 'Emergency', icon: AlertTriangle, activePrefix: '/emergency', badge: activeEmergency ? 'Active' : null, isEmergency: true },
     { to: '/emergency', label: 'Map View', icon: Map, activePrefix: '/emergency' },
     { label: 'Report Incident', icon: Flame, isAction: true, onClick: openSosModal },
-    { to: '/emergency', label: 'My Location', icon: MapPin },
-    { to: isSafetyOfficer ? '/admin' : '/emergency', label: 'Settings', icon: Settings },
-    { to: '/emergency', label: 'Help & Support', icon: HelpCircle },
     { to: '/simulation', label: 'Simulation', icon: PlayCircle, activePrefix: '/simulation' },
     ...(isSafetyOfficer ? [
       { to: '/admin', label: 'Safety Command', icon: LayoutDashboard, activePrefix: '/admin', isCommand: true }
