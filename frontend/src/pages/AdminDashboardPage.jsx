@@ -24,6 +24,7 @@ import {
   Search
 } from 'lucide-react';
 import MapCanvas from '../components/MapCanvas';
+import VoiceNavPanel from '../components/VoiceNavPanel';
 import { api } from '../services/api';
 import { useEmergency } from '../context/EmergencyContext';
 import { useAuth } from '../context/AuthContext';
@@ -695,10 +696,15 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Right Column: Controls & IoT Simulation (5 cols) */}
+          {/* Right Column: Voice Guidance Advisory (ON TOP), Hazard Injector & IoT Simulation (5 cols) */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-4">
             
-            {/* Dynamic Hazard Injector Panel */}
+            {/* 1. Life-Safety Voice Guidance & Audio Advisory Panel (ON TOP) */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+              <VoiceNavPanel />
+            </div>
+
+            {/* 2. Dynamic Hazard Injector Panel */}
             <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs space-y-3">
               <h3 className="font-bold text-sm text-slate-900 flex items-center space-x-2">
                 <Plus className="w-4 h-4 text-emerald-600" />

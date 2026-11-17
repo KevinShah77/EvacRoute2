@@ -77,6 +77,7 @@ export default function EmergencyEvacuationPage() {
   const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   const { 
     activeEmergency, 
+    hazards = [],
     openSosModal,
     activeSos,
     topology,
@@ -90,20 +91,22 @@ export default function EmergencyEvacuationPage() {
 
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
+  const [isEmergencyDetailsOpen, setIsEmergencyDetailsOpen] = useState(false);
   const [showDistressForm, setShowDistressForm] = useState(false);
   const [operationalTab, setOperationalTab] = useState('voice'); // 'voice' | 'location'
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
-  // Close written instructions modal with Escape key
+  // Close modals with Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isInstructionsModalOpen) {
-        setIsInstructionsModalOpen(false);
+      if (e.key === 'Escape') {
+        if (isInstructionsModalOpen) setIsInstructionsModalOpen(false);
+        if (isEmergencyDetailsOpen) setIsEmergencyDetailsOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isInstructionsModalOpen]);
+  }, [isInstructionsModalOpen, isEmergencyDetailsOpen]);
 
   // ================= ESCAPE SIMULATION STATE ON EVACUATION MAP =================
   const [simRunning, setSimRunning] = useState(false);
@@ -352,8 +355,8 @@ export default function EmergencyEvacuationPage() {
           </div>
 
           <button
-            onClick={() => setIsInstructionsModalOpen(true)}
-            className="flex-shrink-0 inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold rounded-lg shadow-xs transition-colors"
+            onClick={() => setIsEmergencyDetailsOpen(true)}
+            className="flex-shrink-0 inline-flex items-center justify-center space-x-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer"
           >
             <span>View Details</span>
             <ChevronRight className="w-4 h-4 ml-0.5" />
@@ -470,11 +473,49 @@ export default function EmergencyEvacuationPage() {
 
         </div>
 
-        {/* Right Column: Status, Safety Instructions, Voice & Location (4 cols) */}
+        {/* Right Column: Voice Guidance (ON TOP), Emergency Status, Safety Instructions (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
           
           {/* ============================================================== */}
-          {/* CARD 1: EMERGENCY STATUS (MATCHING REFERENCE IMAGE)             */}
+          {/* CARD 1: VOICE GUIDANCE & OPERATIONAL CONTROLS (ON TOP)         */}
+          {/* ============================================================== */}
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <div className="flex border-b border-slate-200 bg-slate-50/70 p-1">
+              <button
+                onClick={() => setOperationalTab('voice')}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                  operationalTab === 'voice'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Voice Guidance</span>
+              </button>
+              <button
+                onClick={() => setOperationalTab('location')}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+                  operationalTab === 'location'
+                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                <span>My Room / ADA</span>
+              </button>
+            </div>
+            
+            <div className="p-3">
+              {operationalTab === 'voice' ? (
+                <VoiceNavPanel />
+              ) : (
+                <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
+              )}
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* CARD 2: EMERGENCY STATUS (MATCHING REFERENCE IMAGE)             */}
           {/* ============================================================== */}
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             {/* Dark Navy Header (Reference Image Style) */}
@@ -518,7 +559,7 @@ export default function EmergencyEvacuationPage() {
           </div>
 
           {/* ============================================================== */}
-          {/* CARD 2: SAFETY INSTRUCTIONS (MATCHING REFERENCE IMAGE)         */}
+          {/* CARD 3: SAFETY INSTRUCTIONS (MATCHING REFERENCE IMAGE)         */}
           {/* ============================================================== */}
           <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
             <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
@@ -544,44 +585,6 @@ export default function EmergencyEvacuationPage() {
                 <span>Proceed directly to the nearest safe zone</span>
               </li>
             </ul>
-          </div>
-
-          {/* ============================================================== */}
-          {/* CARD 3: OPERATIONAL CONTROLS (VOICE ADVISORY & LOCATION)        */}
-          {/* ============================================================== */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-            <div className="flex border-b border-slate-200 bg-slate-50/70 p-1">
-              <button
-                onClick={() => setOperationalTab('voice')}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                  operationalTab === 'voice'
-                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Voice Guidance</span>
-              </button>
-              <button
-                onClick={() => setOperationalTab('location')}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                  operationalTab === 'location'
-                    ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                <span>My Room / ADA</span>
-              </button>
-            </div>
-            
-            <div className="p-3">
-              {operationalTab === 'voice' ? (
-                <VoiceNavPanel />
-              ) : (
-                <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
-              )}
-            </div>
           </div>
 
         </div>
@@ -869,6 +872,167 @@ export default function EmergencyEvacuationPage() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* EMERGENCY INCIDENT DETAILS MODAL (VIEW DETAILS)                 */}
+      {/* ============================================================== */}
+      {isEmergencyDetailsOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+          onClick={() => setIsEmergencyDetailsOpen(false)}
+        >
+          <div 
+            className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-red-600 text-white p-4 sm:p-5 flex items-start justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center flex-shrink-0">
+                  <Flame className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-white/25 px-2 py-0.5 rounded">
+                      {activeEmergency?.severity || 'CRITICAL'}
+                    </span>
+                    <span className="text-xs text-red-100 font-medium">Incident Briefing</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight mt-0.5">
+                    {activeEmergency ? `${activeEmergency.emergency_type?.toUpperCase()} EMERGENCY DETAILS` : 'CAMPUS EMERGENCY ADVISORY'}
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsEmergencyDetailsOpen(false)}
+                className="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4 text-xs text-slate-700 max-h-[75vh] overflow-y-auto">
+              {/* Key Incident Parameters */}
+              <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div>
+                  <span className="text-slate-500 font-medium block text-[11px]">Primary Hazard Sector</span>
+                  <span className="font-bold text-slate-900 text-sm flex items-center space-x-1.5 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                    <span>{activeEmergency?.location || 'Room 205'} ({activeEmergency?.floor || 'Floor 2'})</span>
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium block text-[11px]">Reported Timestamp</span>
+                  <span className="font-bold text-slate-900 text-sm flex items-center space-x-1.5 mt-0.5">
+                    <Clock className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                    <span>{currentFormattedTime.split('•')[1]?.trim() || '10:24 AM'}</span>
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium block text-[11px]">Target Evacuation Assembly</span>
+                  <span className="font-bold text-slate-900 text-xs flex items-center space-x-1.5 mt-0.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                    <span className="truncate">{routeResult?.destination_node?.label || 'Safe Assembly Point 3'}</span>
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium block text-[11px]">Protocol Status</span>
+                  <span className="font-bold text-red-600 text-xs flex items-center space-x-1.5 mt-0.5">
+                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping"></span>
+                    <span>Active Controlled Evacuation</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Official Situation Report */}
+              <div>
+                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Official Incident Assessment</span>
+                </h4>
+                <div className="bg-amber-50/80 border border-amber-200/80 p-3 rounded-xl text-amber-950 leading-relaxed text-xs">
+                  {activeEmergency?.description || 
+                    `A confirmed ${activeEmergency?.emergency_type || 'fire'} condition has been detected at ${activeEmergency?.location || 'Room 205'} on ${activeEmergency?.floor || 'Floor 2'}. Life-safety suppression protocols are active. All occupants must follow highlighted egress paths avoiding compromised corridors.`
+                  }
+                </div>
+              </div>
+
+              {/* Active Compromised Sectors */}
+              <div>
+                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1.5 flex items-center space-x-1.5">
+                  <Flame className="w-3.5 h-3.5 text-red-500" />
+                  <span>Compromised Sectors & Hazards ({hazards.length})</span>
+                </h4>
+                {hazards.length > 0 ? (
+                  <div className="space-y-1.5">
+                    {hazards.map((h, i) => (
+                      <div key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-red-50 border border-red-100 text-red-950 text-xs">
+                        <div className="flex items-center space-x-2">
+                          <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                          <span className="font-bold">{h.hazard_type?.toUpperCase()}</span>
+                          <span className="text-slate-600">at {h.node_id || h.location || 'Compromised Zone'}</span>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold bg-red-200 text-red-800 px-1.5 py-0.5 rounded">
+                          {h.floor}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs">
+                    Primary hazard centered at {activeEmergency?.location || 'Room 205'}. Adjacent perimeter sectors clear.
+                  </div>
+                )}
+              </div>
+
+              {/* Direct Safety Contacts */}
+              <div className="pt-2 border-t border-slate-100">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Emergency Response Contacts</span>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="text-slate-500 block text-[10px]">Campus Police / Dispatch</span>
+                    <strong className="text-slate-900 font-mono">+1-555-019-SAFE</strong>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="text-slate-500 block text-[10px]">Emergency Services</span>
+                    <strong className="text-slate-900 font-mono">000 / 911</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <a
+                href="tel:+15550197233"
+                className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs flex items-center space-x-1.5 transition-colors shadow-xs"
+              >
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span>Call Safety Dispatch</span>
+              </a>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setIsEmergencyDetailsOpen(false);
+                    openSosModal();
+                  }}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Transmit SOS
+                </button>
+                <button
+                  onClick={() => setIsEmergencyDetailsOpen(false)}
+                  className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-lg font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
