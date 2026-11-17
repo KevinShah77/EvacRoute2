@@ -92,34 +92,34 @@ export default function VoiceNavPanel() {
 
   if (!routeResult) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-slate-400">
-        <Radio className="w-6 h-6 mx-auto mb-2 text-slate-500 animate-spin" />
-        <p className="text-xs">Calculating evacuation route...</p>
+      <div className="bg-white border border-slate-200 rounded-xl p-5 text-center text-slate-500 shadow-xs">
+        <Radio className="w-5 h-5 mx-auto mb-2 text-slate-400 animate-spin" />
+        <p className="text-xs font-medium">Calculating evacuation route...</p>
       </div>
     );
   }
 
   if (!routeResult.safe_route_found) {
     return (
-      <div className="bg-red-950/80 border border-red-600 rounded-2xl p-4 shadow-xl text-red-100 space-y-3">
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-xs text-red-950 space-y-3">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl bg-red-600 text-white animate-bounce flex-shrink-0">
+          <div className="p-2 rounded-lg bg-red-600 text-white flex-shrink-0">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-extrabold text-sm text-white">ALL EXITS BLOCKED</h3>
-            <p className="text-xs text-red-300">Corridors obstructed. Shelter in place & await rescue.</p>
+            <h3 className="font-bold text-sm text-red-900">ALL EXITS BLOCKED</h3>
+            <p className="text-xs text-red-800 mt-0.5">Corridors obstructed. Shelter in place & await rescue.</p>
           </div>
         </div>
         <div className="flex items-center justify-between pt-1">
           <button
             onClick={speakHazardWarning}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold shadow flex items-center space-x-1.5"
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center space-x-1.5"
           >
             <Volume2 className="w-3.5 h-3.5" />
             <span>Play Warning</span>
           </button>
-          <span className="text-xs text-red-300 font-bold">RESCUE DISPATCHED</span>
+          <span className="text-xs text-red-700 font-bold uppercase tracking-wider">Rescue Dispatched</span>
         </div>
       </div>
     );
@@ -131,26 +131,26 @@ export default function VoiceNavPanel() {
   const hasEmergency = Boolean(activeEmergency || (hazards && hazards.length > 0));
 
   return (
-    <div className="evac-card overflow-hidden flex flex-col shadow-xl">
+    <div className="flex flex-col space-y-3">
       
       {/* Short Voice Hazard Warning Card */}
-      <div className={`p-4 sm:p-5 border-b transition-all ${
+      <div className={`p-3.5 rounded-lg border ${
         hasEmergency 
-          ? 'bg-gradient-to-br from-red-950/80 to-slate-900 border-red-500/30 text-red-100' 
-          : 'bg-gradient-to-br from-emerald-950/50 to-slate-900 border-emerald-500/20 text-emerald-100'
+          ? 'bg-red-50/70 border-red-200 text-slate-900' 
+          : 'bg-emerald-50/50 border-emerald-200 text-slate-900'
       }`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start space-x-3 min-w-0">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-md ${
-              hasEmergency ? 'bg-red-600 animate-pulse shadow-red-600/40' : 'bg-emerald-600 shadow-emerald-600/40'
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0 mt-0.5 shadow-xs ${
+              hasEmergency ? 'bg-red-600' : 'bg-emerald-600'
             }`}>
               {hasEmergency ? <AlertTriangle className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
             </div>
             <div className="min-w-0">
-              <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Life-Safety Voice Advisory
               </div>
-              <p className="text-xs sm:text-sm font-bold text-white mt-0.5 leading-snug">
+              <p className="text-xs sm:text-sm font-semibold text-slate-900 mt-0.5 leading-snug">
                 {warningText}
               </p>
             </div>
@@ -158,12 +158,12 @@ export default function VoiceNavPanel() {
         </div>
 
         {/* Audio Action Buttons */}
-        <div className="flex items-center justify-between gap-2 mt-3.5 pt-3 border-t border-white/[0.08]">
+        <div className="flex items-center justify-between gap-2 mt-3.5 pt-3 border-t border-slate-200/80">
           <div className="flex items-center space-x-2">
             {assistantStatus === 'SPEAKING' ? (
               <button
                 onClick={stopNavigation}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-full text-xs font-bold border border-white/[0.1] flex items-center space-x-1.5 transition-all shadow-sm"
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs"
               >
                 <Square className="w-3.5 h-3.5" />
                 <span>Stop</span>
@@ -171,10 +171,10 @@ export default function VoiceNavPanel() {
             ) : (
               <button
                 onClick={speakHazardWarning}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold shadow flex items-center space-x-1.5 transition-all evac-btn-inset ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs flex items-center space-x-1.5 transition-colors ${
                   hasEmergency 
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/30' 
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-600/30'
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                 }`}
               >
                 <Volume2 className="w-3.5 h-3.5" />
@@ -183,23 +183,23 @@ export default function VoiceNavPanel() {
             )}
 
             {/* Language Toggle: EN / हिन्दी */}
-            <div className="flex items-center bg-slate-950/80 border border-white/[0.08] rounded-full p-0.5 text-xs">
+            <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5 text-xs">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] transition-all ${
+                className={`px-2 py-0.5 rounded font-bold text-[11px] transition-colors ${
                   language === 'en'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-blue-600 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLanguage('hi')}
-                className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] transition-all ${
+                className={`px-2 py-0.5 rounded font-bold text-[11px] transition-colors ${
                   language === 'hi'
-                    ? 'bg-orange-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-orange-600 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 हिन्दी
@@ -210,18 +210,18 @@ export default function VoiceNavPanel() {
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleMute}
-              className={`p-1.5 rounded-full border text-xs transition-all ${
+              className={`p-1.5 rounded-lg border text-xs transition-colors ${
                 isMuted
-                  ? 'bg-red-900/40 text-red-400 border-red-700/50'
-                  : 'bg-slate-900 text-slate-300 border-white/[0.08] hover:text-white hover:bg-slate-800'
+                  ? 'bg-red-50 text-red-600 border-red-200'
+                  : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50'
               }`}
               title={isMuted ? 'Unmute' : 'Mute'}
             >
               {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
-            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
-              assistantStatus === 'SPEAKING' ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300 animate-pulse shadow-sm shadow-emerald-500/20' :
-              'bg-slate-950/80 border-white/[0.08] text-slate-400'
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+              assistantStatus === 'SPEAKING' ? 'bg-emerald-100 text-emerald-800 animate-pulse' :
+              'bg-slate-100 text-slate-600'
             }`}>
               {assistantStatus}
             </span>
@@ -230,24 +230,24 @@ export default function VoiceNavPanel() {
 
         {/* Dynamic Incident Notification Controls: ONLY FOR ADMIN */}
         {isAdmin && (
-          <div className="mt-3.5 pt-3.5 border-t border-red-800/30 space-y-2.5">
+          <div className="mt-3.5 pt-3.5 border-t border-slate-200/80 space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-300 flex items-center space-x-1.5">
-                <Flame className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[11px] font-bold text-slate-800 flex items-center space-x-1.5">
+                <Flame className="w-3.5 h-3.5 text-red-500" />
                 <span>Admin Incident Alert Settings</span>
               </span>
-              <span className="text-[10px] text-amber-400/90 font-mono bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-500/30">Admin Only</span>
+              <span className="text-[10px] text-amber-700 font-mono bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Admin Only</span>
             </div>
 
             <div className="space-y-2">
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                <label className="text-[10px] font-semibold text-slate-600 block mb-1">
                   Cause:
                 </label>
                 <select
                   value={incidentCause}
                   onChange={handleCauseChange}
-                  className="w-full bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-3 py-1.5 text-xs text-white font-medium outline-none transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium outline-none transition-colors"
                 >
                   <option value="fire">Fire Emergency</option>
                   <option value="smoke">Heavy Smoke</option>
@@ -258,7 +258,7 @@ export default function VoiceNavPanel() {
               </div>
 
               <div>
-                <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                <label className="text-[10px] font-semibold text-slate-600 block mb-1">
                   Room Number:
                 </label>
                 <div className="flex items-center space-x-2">
@@ -268,7 +268,7 @@ export default function VoiceNavPanel() {
                     onChange={handleIncidentRoomChange}
                     onKeyDown={handleIncidentRoomKeyDown}
                     placeholder="e.g. 205, 208, 420..."
-                    className="flex-1 min-w-0 bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-3 py-1.5 text-xs text-white font-semibold placeholder-slate-500 outline-none shadow-inner transition-colors"
+                    className="flex-1 min-w-0 bg-slate-50 border border-slate-200 focus:border-red-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold placeholder-slate-400 outline-none transition-colors"
                   />
                   <button
                     type="button"
@@ -277,7 +277,7 @@ export default function VoiceNavPanel() {
                       commitIncidentAlert(incidentCause, incidentRoom);
                     }}
                     onClick={() => commitIncidentAlert(incidentCause, incidentRoom)}
-                    className="evac-btn-inset px-4 py-1.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex-shrink-0 cursor-pointer"
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors flex-shrink-0 cursor-pointer"
                     title="Apply Incident Room"
                   >
                     Set
@@ -290,33 +290,33 @@ export default function VoiceNavPanel() {
       </div>
 
       {/* Concise Route Overview */}
-      <div className="p-4 sm:p-5 bg-slate-900/60 text-xs space-y-3">
-        <div className="flex items-center justify-between text-slate-300">
+      <div className="p-4 bg-slate-50/50 text-xs space-y-2.5">
+        <div className="flex items-center justify-between text-slate-700">
           <div className="flex items-center space-x-2">
-            <DoorOpen className="w-4 h-4 text-emerald-400" />
-            <span className="text-slate-400">Target Exit:</span>
-            <strong className="text-white">{routeResult.destination_node?.label || 'Safe Exit'}</strong>
+            <DoorOpen className="w-4 h-4 text-emerald-600" />
+            <span className="text-slate-500">Target Exit:</span>
+            <strong className="text-slate-900">{routeResult.destination_node?.label || 'Safe Exit'}</strong>
           </div>
           {accessibleMode && (
-            <span className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-600 text-cyan-300 font-semibold text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-[10px]">
               ADA Route
             </span>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800 text-slate-300">
-          <div className="flex items-center space-x-2 bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200/80 text-slate-700">
+          <div className="flex items-center space-x-2 bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+            <Clock className="w-3.5 h-3.5 text-emerald-600" />
             <div>
-              <div className="text-[10px] text-slate-400">Est. Time</div>
-              <div className="font-mono font-bold text-white text-xs">{routeResult.rset_formatted}</div>
+              <div className="text-[10px] text-slate-500">Est. Time</div>
+              <div className="font-mono font-bold text-slate-900 text-xs">{routeResult.rset_formatted}</div>
             </div>
           </div>
-          <div className="flex items-center space-x-2 bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <Footprints className="w-3.5 h-3.5 text-blue-400" />
+          <div className="flex items-center space-x-2 bg-white p-2 rounded-lg border border-slate-200 shadow-xs">
+            <Footprints className="w-3.5 h-3.5 text-blue-600" />
             <div>
-              <div className="text-[10px] text-slate-400">Distance</div>
-              <div className="font-mono font-bold text-white text-xs">{routeResult.total_distance_meters} m</div>
+              <div className="text-[10px] text-slate-500">Distance</div>
+              <div className="font-mono font-bold text-slate-900 text-xs">{routeResult.total_distance_meters} m</div>
             </div>
           </div>
         </div>

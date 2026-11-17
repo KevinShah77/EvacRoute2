@@ -141,36 +141,33 @@ export default function LocationSelector({ onOpenQrModal }) {
   ];
 
   return (
-    <div className="evac-card rounded-2xl p-4 sm:p-5 space-y-4">
+    <div className="space-y-3.5">
       
-      <div className="flex items-center justify-between pb-1">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center text-blue-400 shadow-sm">
-            <MapPin className="w-4 h-4" />
-          </div>
+      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="flex items-center space-x-2">
+          <MapPin className="w-4 h-4 text-slate-700" />
           <div>
-            <h3 className="font-semibold text-sm text-slate-100 tracking-tight">Your Location</h3>
-            <p className="text-[11px] text-slate-400">Set current indoor point</p>
+            <h3 className="font-bold text-sm text-slate-900">Your Location</h3>
           </div>
         </div>
         
         {/* QR Code indoor positioning button */}
         <button
           onClick={onOpenQrModal}
-          className="evac-pill evac-btn-inset flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/[0.08] rounded-full text-xs font-semibold shadow-sm transition-all"
+          className="flex items-center space-x-1.5 px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold shadow-xs transition-colors"
         >
-          <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+          <QrCode className="w-3.5 h-3.5 text-emerald-600" />
           <span>Scan QR</span>
         </button>
       </div>
 
       {/* Direct Room Number Text Box Input */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-semibold text-slate-300">
+          <label className="text-xs font-semibold text-slate-700">
             Write Room Number:
           </label>
-          <span className="text-[10px] text-slate-400">e.g. 208, 205, 420, 105</span>
+          <span className="text-[10px] text-slate-400">e.g. 208, 205, 420</span>
         </div>
         <div className="relative flex items-center space-x-2">
           <input
@@ -178,14 +175,14 @@ export default function LocationSelector({ onOpenQrModal }) {
             value={roomInput}
             onChange={handleRoomInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Type room number (e.g. 208, 205)..."
-            className="flex-1 bg-slate-950/80 border border-white/[0.1] focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 font-semibold outline-none transition-all shadow-inner"
+            placeholder="Type room number (e.g. 208)..."
+            className="flex-1 bg-slate-50 border border-slate-200 focus:border-blue-500 rounded-lg px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors"
           />
           {roomInput && (
             <button
               type="button"
               onClick={() => setRoomInput('')}
-              className="text-xs text-slate-400 hover:text-white px-2 py-2"
+              className="text-xs text-slate-400 hover:text-slate-600 px-1.5 py-1"
               title="Clear text box"
             >
               ✕
@@ -198,48 +195,48 @@ export default function LocationSelector({ onOpenQrModal }) {
               applyRoomNumber(roomInput);
             }}
             onClick={() => applyRoomNumber(roomInput)}
-            className="evac-btn-inset px-4 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-colors cursor-pointer"
             title="Set Location"
           >
             Set
           </button>
         </div>
         {feedbackMsg && (
-          <div className={`text-[11px] font-semibold flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border backdrop-blur-md transition-all ${
+          <div className={`text-[11px] font-medium flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border transition-all ${
             feedbackMsg.type === 'success' 
-              ? 'text-emerald-300 bg-emerald-950/40 border-emerald-500/30' 
-              : 'text-amber-300 bg-amber-950/40 border-amber-500/30'
+              ? 'text-emerald-800 bg-emerald-50 border-emerald-200' 
+              : 'text-amber-800 bg-amber-50 border-amber-200'
           }`}>
-            {feedbackMsg.type === 'success' ? <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-400" /> : <span className="flex-shrink-0">⚠️</span>}
+            {feedbackMsg.type === 'success' ? <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" /> : <span className="flex-shrink-0">⚠️</span>}
             <span>{feedbackMsg.type === 'success' ? `Location set to: ${feedbackMsg.text}` : feedbackMsg.text}</span>
           </div>
         )}
       </div>
 
       {/* Room Dropdown */}
-      <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold text-slate-400 block">
+      <div className="space-y-1">
+        <label className="text-[11px] font-semibold text-slate-600 block">
           Or Select From Building List:
         </label>
         <div className="relative">
           <select
             value={userLocationNode}
             onChange={(e) => selectUserLocation(e.target.value)}
-            className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 appearance-none font-medium cursor-pointer shadow-inner"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 appearance-none font-medium cursor-pointer"
           >
             {filteredRooms.map(r => (
-              <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+              <option key={r.id} value={r.id} className="bg-white text-slate-900">
                 {r.floor}: {cleanNodeLabel(r.id, r.label)}
               </option>
             ))}
           </select>
-          <span className="absolute right-3.5 top-3.5 text-slate-400 pointer-events-none text-xs">▼</span>
+          <span className="absolute right-3 top-2 text-slate-400 pointer-events-none text-xs">▼</span>
         </div>
       </div>
 
       {/* Quick Select Room Chips */}
       <div>
-        <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
           Quick Select:
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -249,10 +246,10 @@ export default function LocationSelector({ onOpenQrModal }) {
               <button
                 key={qr.id}
                 onClick={() => selectUserLocation(qr.id)}
-                className={`evac-pill px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
                   isSelected
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 ring-1 ring-blue-400/50 evac-btn-inset font-semibold'
-                    : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/[0.08]'
+                    ? 'bg-[#0f172a] text-white font-semibold shadow-xs'
+                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
                 {qr.label}
@@ -263,29 +260,29 @@ export default function LocationSelector({ onOpenQrModal }) {
       </div>
 
       {/* ADA Accessibility Toggle */}
-      <div className="pt-3.5 border-t border-white/[0.06] flex items-center justify-between">
-        <div className="flex items-center space-x-2.5">
+      <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
           <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-            accessibleMode ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06]'
+            accessibleMode ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'bg-slate-50 text-slate-500 border border-slate-200'
           }`}>
             <Accessibility className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-xs font-bold text-white">Wheelchair / ADA Mode</div>
-            <div className="text-[10px] text-slate-400">Prioritize elevators & ramps</div>
+            <div className="text-xs font-bold text-slate-900">Wheelchair / ADA Mode</div>
+            <div className="text-[10px] text-slate-500">Prioritize elevators & ramps</div>
           </div>
         </div>
 
         <button
           onClick={() => setAccessibleMode(!accessibleMode)}
           aria-label="Toggle ADA Accessibility Mode"
-          className={`w-12 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out border border-white/[0.1] relative ${
-            accessibleMode ? 'bg-cyan-600' : 'bg-slate-800'
+          className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out relative ${
+            accessibleMode ? 'bg-blue-600' : 'bg-slate-300'
           }`}
         >
           <div
-            className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out ${
-              accessibleMode ? 'translate-x-6' : 'translate-x-0'
+            className={`w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+              accessibleMode ? 'translate-x-5' : 'translate-x-0'
             }`}
           />
         </button>

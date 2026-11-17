@@ -19,7 +19,8 @@ import {
   Move,
   AlertOctagon,
   Volume2,
-  ListOrdered
+  ListOrdered,
+  Plus
 } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { useAuth } from '../context/AuthContext';
@@ -292,25 +293,25 @@ export default function MapCanvas({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full ${className || 'h-[680px] sm:h-[760px] lg:h-[820px] xl:h-[880px] min-h-[640px]'} evac-card rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden select-none flex flex-col`}
+      className={`relative w-full ${className || 'h-[640px] sm:h-[720px] lg:h-[780px]'} bg-[#0c1425] rounded-xl border border-slate-200 shadow-xs overflow-hidden select-none flex flex-col`}
     >
-      {/* ================= GOOGLE MAPS STYLE MOBILE NAVIGATION BANNER ================= */}
-      <div className="absolute top-2 left-2 right-2 sm:hidden z-40 pointer-events-auto bg-slate-950/85 backdrop-blur-xl border border-emerald-500/40 rounded-2xl p-2.5 shadow-2xl flex items-center justify-between gap-2 text-white">
+      {/* ================= MOBILE NAVIGATION BANNER ================= */}
+      <div className="absolute top-2 left-2 right-2 sm:hidden z-40 pointer-events-auto bg-white/95 backdrop-blur-sm border border-emerald-500/50 rounded-xl p-2.5 shadow-md flex items-center justify-between gap-2 text-slate-800">
         <div 
           onClick={onOpenInstructions || undefined} 
           className={`flex items-center space-x-2.5 min-w-0 ${onOpenInstructions ? 'cursor-pointer active:opacity-80' : ''}`}
           title={onOpenInstructions ? "Tap to view full turn-by-turn written instructions" : undefined}
         >
-          <div className={`p-2 rounded-xl flex-shrink-0 shadow-md ${routeResult?.safe_route_found ? 'bg-emerald-600' : 'bg-red-600 animate-bounce'}`}>
-            <Navigation className="w-4 h-4 text-white" />
+          <div className={`p-2 rounded-lg flex-shrink-0 shadow-xs ${routeResult?.safe_route_found ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
+            <Navigation className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className={`text-xs font-bold truncate ${routeResult?.safe_route_found ? 'text-emerald-300' : 'text-red-300'}`}>
+            <div className={`text-xs font-bold truncate ${routeResult?.safe_route_found ? 'text-emerald-700' : 'text-red-700'}`}>
               {routeResult?.safe_route_found
                 ? (routeResult.steps?.[0]?.short_direction || 'Follow Green Safe Route')
                 : 'All Exits Blocked - Shelter In Place'}
             </div>
-            <div className="text-[10px] text-slate-300 truncate">
+            <div className="text-[10px] text-slate-500 truncate">
               {routeResult?.safe_route_found
                 ? `To ${routeResult.destination_node?.label || 'Safe Exit'} • ${routeResult.rset_formatted || '45s'} (${routeResult.total_distance_meters || 65}m)`
                 : 'Stay low, seal doors & wait for rescue'}
@@ -320,14 +321,14 @@ export default function MapCanvas({
         {onOpenSosModal && (
           <button
             onClick={onOpenSosModal}
-            className={`px-2.5 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1 flex-shrink-0 evac-btn-inset shadow-md transition-all ${
+            className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center space-x-1 flex-shrink-0 shadow-xs transition-all ${
               isSafetyOfficer || activeSos
-                ? 'bg-red-600 hover:bg-red-500 text-white animate-pulse ring-1 ring-red-400/50'
-                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/[0.1]'
+                ? 'bg-red-600 text-white'
+                : 'bg-white text-slate-700 border border-slate-200'
             }`}
-            title={isSafetyOfficer ? "Generate Campus S.O.S. (Safety Officer)" : (activeSos ? "View Active S.O.S." : "View S.O.S. Status (Students View Only)")}
+            title={isSafetyOfficer ? "Generate Campus S.O.S. (Safety Officer)" : (activeSos ? "View Active S.O.S." : "View S.O.S. Status")}
           >
-            <AlertOctagon className="w-3.5 h-3.5" />
+            <AlertOctagon className="w-3.5 h-3.5 text-red-500" />
             <span>{isSafetyOfficer ? 'SOS' : (activeSos ? 'SOS' : 'VIEW')}</span>
           </button>
         )}
@@ -335,7 +336,7 @@ export default function MapCanvas({
 
       {/* ================= MOBILE FLOATING CONTROLS (VERTICAL FLOORS, INSTRUCTIONS, VOICE, RECENTER) ================= */}
       <div className="absolute top-16 right-2 sm:hidden z-30 flex flex-col space-y-1.5 pointer-events-auto">
-        <div className="bg-slate-950/85 backdrop-blur-xl p-1 rounded-2xl border border-white/[0.08] shadow-xl flex flex-col space-y-1">
+        <div className="bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-md flex flex-col space-y-1">
           {floors.map(floor => {
             const isSelected = selectedFloor === floor;
             const hasDanger = hazards.some(h => h.floor === floor && h.is_active !== false);
@@ -343,8 +344,8 @@ export default function MapCanvas({
               <button
                 key={floor}
                 onClick={() => setSelectedFloor(floor)}
-                className={`w-7 h-7 rounded-xl text-[10px] font-extrabold flex items-center justify-center relative transition-all ${
-                  isSelected ? 'bg-blue-600 text-white shadow-md evac-btn-inset' : 'text-slate-300 hover:bg-white/[0.08]'
+                className={`w-7 h-7 rounded-lg text-[10px] font-bold flex items-center justify-center relative transition-all ${
+                  isSelected ? 'bg-[#0f172a] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 <span>{floor === 'Ground' ? 'GF' : floor.replace('Floor ', 'F')}</span>
@@ -356,7 +357,7 @@ export default function MapCanvas({
         {onOpenInstructions && (
           <button
             onClick={onOpenInstructions}
-            className="w-8 h-8 bg-slate-950/85 backdrop-blur-xl border border-white/[0.08] rounded-xl flex items-center justify-center text-blue-400 shadow-lg hover:text-white transition-colors"
+            className="w-8 h-8 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg flex items-center justify-center text-blue-600 shadow-md hover:bg-slate-50 transition-colors"
             title="View Turn-by-Turn Instructions"
           >
             <ListOrdered className="w-4 h-4" />
@@ -364,7 +365,7 @@ export default function MapCanvas({
         )}
         <button
           onClick={centerOnUser}
-          className="w-8 h-8 bg-slate-950/85 backdrop-blur-xl border border-white/[0.08] rounded-xl flex items-center justify-center text-blue-400 shadow-lg hover:text-white transition-colors"
+          className="w-8 h-8 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg flex items-center justify-center text-blue-600 shadow-md hover:bg-slate-50 transition-colors"
           title="Center My Location"
         >
           <Crosshair className="w-4 h-4" />
@@ -372,7 +373,7 @@ export default function MapCanvas({
         {voiceNav?.speakHazardWarning && (
           <button
             onClick={voiceNav.speakHazardWarning}
-            className="w-8 h-8 bg-slate-950/85 backdrop-blur-xl border border-white/[0.08] rounded-xl flex items-center justify-center text-emerald-400 shadow-lg hover:text-white transition-colors"
+            className="w-8 h-8 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg flex items-center justify-center text-emerald-600 shadow-md hover:bg-slate-50 transition-colors"
             title="Hear Voice Warning"
           >
             <Volume2 className="w-4 h-4" />
@@ -383,8 +384,8 @@ export default function MapCanvas({
       {/* ================= TOP TOOLBAR (DESKTOP / TABLET) ================= */}
       <div className="hidden sm:flex absolute top-3 left-3 right-3 z-30 items-center justify-between gap-2 pointer-events-none">
         
-        {/* Floor Selection Buttons */}
-        <div className="flex items-center space-x-1 bg-slate-950/80 backdrop-blur-xl p-1.5 rounded-full border border-white/[0.08] shadow-xl pointer-events-auto">
+        {/* Floor Selection Buttons (Clean Enterprise Tabs) */}
+        <div className="flex items-center space-x-1 bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm pointer-events-auto">
           {floors.map(floor => {
             const hasDangerOnFloor = hazards.some(h => h.floor === floor && h.is_active !== false && (h.hazard_type || '').toLowerCase() !== 'smoke');
             const hasSmokeOnFloor = hazards.some(h => h.floor === floor && h.is_active !== false && (h.hazard_type || '').toLowerCase() === 'smoke');
@@ -395,59 +396,59 @@ export default function MapCanvas({
               <button
                 key={floor}
                 onClick={() => setSelectedFloor(floor)}
-                className={`relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                className={`relative px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
                   isSelected
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 evac-btn-inset'
-                    : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-[#0f172a] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 <span>{floor}</span>
-                {/* Active Danger Ping */}
+                {/* Active Danger Dot */}
                 {hasDangerOnFloor && (
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" title="Critical hazard on floor" />
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Critical hazard on floor" />
                 )}
                 {hasSmokeOnFloor && !hasDangerOnFloor && (
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Smoke detected on floor" />
+                  <span className="w-2 h-2 rounded-full bg-amber-500" title="Smoke detected on floor" />
                 )}
                 {/* User Location indicator */}
                 {isUserFloor && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400" title="Your current location floor" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" title="Your current location floor" />
                 )}
               </button>
             );
           })}
         </div>
 
-        {/* Route Selector & View Controls (Section 1: Route visibility selection) */}
+        {/* Route Selector & View Controls */}
         <div className="flex items-center space-x-2 pointer-events-auto">
           
           {/* Route Visibility Toggle: Primary vs Alternative */}
           {routeResult?.safe_route_found && (
-            <div className="flex items-center bg-slate-950/80 backdrop-blur-xl p-1 rounded-full border border-white/[0.08] shadow-xl">
+            <div className="flex items-center bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm">
               <button
                 onClick={() => setSelectedRoute('primary')}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
                   selectedRoute === 'primary'
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/25 evac-btn-inset'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 title="Display Primary Recommended Route"
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span className={`w-2 h-2 rounded-full ${selectedRoute === 'primary' ? 'bg-white' : 'bg-emerald-500'}`}></span>
                 <span>Primary</span>
               </button>
 
               {routeResult.backup_path_node_ids && routeResult.backup_path_node_ids.length > 0 && (
                 <button
                   onClick={() => setSelectedRoute('backup')}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
                     selectedRoute === 'backup'
-                      ? 'bg-amber-600 text-white shadow-md shadow-amber-500/25 evac-btn-inset'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                   title="Display Alternative Safe Route"
                 >
-                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span className={`w-2 h-2 rounded-full ${selectedRoute === 'backup' ? 'bg-white' : 'bg-amber-500'}`}></span>
                   <span>Alt Route</span>
                 </button>
               )}
@@ -455,11 +456,11 @@ export default function MapCanvas({
           )}
 
           {/* Blueprint Opacity / Layer Toggle */}
-          <div className="flex items-center bg-slate-950/80 backdrop-blur-xl p-1 px-2 rounded-full border border-white/[0.08] shadow-xl">
+          <div className="flex items-center bg-white/95 backdrop-blur-sm p-1 px-2 rounded-lg border border-slate-200 shadow-sm">
             <button
               onClick={() => setShowBlueprint(prev => !prev)}
-              className={`p-1.5 rounded-full text-xs font-medium transition-all ${
-                showBlueprint ? 'text-blue-400 bg-blue-500/15' : 'text-slate-500 hover:text-slate-300'
+              className={`p-1.5 rounded-md text-xs font-medium transition-all ${
+                showBlueprint ? 'text-blue-600 bg-blue-50' : 'text-slate-400 hover:text-slate-600'
               }`}
               title={showBlueprint ? 'Hide Floor Plan Blueprint' : 'Show Floor Plan Blueprint'}
             >
@@ -473,38 +474,38 @@ export default function MapCanvas({
                 step="0.05"
                 value={blueprintOpacity}
                 onChange={(e) => setBlueprintOpacity(parseFloat(e.target.value))}
-                className="w-16 h-1 mx-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                className="w-16 h-1 mx-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 title={`Floor Blueprint Opacity: ${Math.round(blueprintOpacity * 100)}%`}
               />
             )}
           </div>
 
           {/* Zoom & View Controls */}
-          <div className="flex items-center space-x-0.5 bg-slate-950/80 backdrop-blur-xl p-1 px-1.5 rounded-full border border-white/[0.08] shadow-xl">
+          <div className="flex items-center space-x-0.5 bg-white/95 backdrop-blur-sm p-1 px-1 rounded-lg border border-slate-200 shadow-sm text-slate-700">
             <button
               onClick={centerOnUser}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
+              className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
               title="Locate My Room (Center View)"
             >
-              <Crosshair className="w-4 h-4 text-blue-400" />
+              <Crosshair className="w-4 h-4 text-blue-600" />
             </button>
             <button
               onClick={() => setZoom(prev => Math.min(prev + 0.25, 3.0))}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
+              className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
               title="Zoom In (+)"
             >
               <ZoomIn className="w-4 h-4" />
             </button>
             <button
               onClick={() => setZoom(prev => Math.max(prev - 0.25, 0.75))}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
+              className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
               title="Zoom Out (-)"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
             <button
               onClick={resetView}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
+              className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
               title="Reset View"
             >
               <RotateCcw className="w-4 h-4" />
@@ -914,49 +915,106 @@ export default function MapCanvas({
           )}
         </svg>
 
+        {/* ================= OVERLAID GIS MAP LEGEND (MATCHES REFERENCE IMAGE) ================= */}
+        <div className="hidden sm:block absolute bottom-3 left-3 z-30 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-3 shadow-md text-xs pointer-events-auto">
+          <div className="space-y-2 text-[11px] text-slate-700 font-semibold">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center flex-shrink-0">
+                <Flame className="w-3 h-3 text-white" />
+              </div>
+              <span>Incident Location</span>
+            </div>
+            <div className="flex items-center space-x-2.5">
+              <span className="w-5 h-5 rounded-full bg-blue-600 ring-2 ring-blue-300 flex-shrink-0 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-white"></span>
+              </span>
+              <span>Your Location</span>
+            </div>
+            <div className="flex items-center space-x-2.5">
+              <span className="w-5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+              <span>Evacuation Route</span>
+            </div>
+            <div className="flex items-center space-x-2.5">
+              <div className="w-5 h-5 rounded bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
+                <DoorOpen className="w-3.5 h-3.5" />
+              </div>
+              <span>Safe Zone</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= FLOATING VERTICAL GIS ZOOM CONTROLS (MATCHES REFERENCE IMAGE) ================= */}
+        <div className="hidden sm:flex absolute right-3 bottom-12 z-30 flex-col space-y-1 pointer-events-auto">
+          <div className="bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-md flex flex-col space-y-1 text-slate-700">
+            <button
+              onClick={() => setZoom(prev => Math.min(prev + 0.25, 3.0))}
+              className="w-7 h-7 flex items-center justify-center hover:bg-slate-100 rounded-lg text-slate-800 transition-colors font-bold text-xs cursor-pointer"
+              title="Zoom In (+)"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+            <div className="h-px bg-slate-200 my-0.5"></div>
+            <button
+              onClick={() => setZoom(prev => Math.max(prev - 0.25, 0.75))}
+              className="w-7 h-7 flex items-center justify-center hover:bg-slate-100 rounded-lg text-slate-800 transition-colors font-bold text-xs cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <span className="text-base font-bold leading-none">−</span>
+            </button>
+            <div className="h-px bg-slate-200 my-0.5"></div>
+            <button
+              onClick={centerOnUser}
+              className="w-7 h-7 flex items-center justify-center hover:bg-slate-100 rounded-lg text-blue-600 transition-colors cursor-pointer"
+              title="Locate My Room (Center View)"
+            >
+              <Crosshair className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
         {/* Hovered Node Tooltip HUD */}
         {hoveredNode && (
-          <div className="absolute bottom-4 left-4 z-40 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 px-4 py-2.5 rounded-xl shadow-2xl pointer-events-none text-xs max-w-xs">
-            <div className="font-extrabold text-white flex items-center justify-between space-x-2">
+          <div className="absolute bottom-3 left-48 z-40 bg-white/95 backdrop-blur-sm border border-slate-200 px-3.5 py-2 rounded-lg shadow-lg pointer-events-none text-xs max-w-xs text-slate-900">
+            <div className="font-bold text-slate-900 flex items-center justify-between space-x-2">
               <span>{hoveredNode.label}</span>
-              <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                 {hoveredNode.id}
               </span>
             </div>
-            <div className="text-[11px] text-slate-300 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <div className="text-[11px] text-slate-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span>Floor: <strong>{hoveredNode.floor}</strong></span>
               <span>•</span>
               <span className="capitalize">Type: <strong>{hoveredNode.type}</strong></span>
               {userLocationNode === hoveredNode.id && (
-                <span className="text-blue-400 font-bold">• YOUR CURRENT LOCATION</span>
+                <span className="text-blue-600 font-bold">• YOUR LOCATION</span>
               )}
               {dangerNodeIds.has(hoveredNode.id) && (
-                <span className="text-red-400 font-bold">• ACTIVE DANGER ZONE (RED)</span>
+                <span className="text-red-600 font-bold">• DANGER ZONE</span>
               )}
               {restrictedNodeIds.has(hoveredNode.id) && !dangerNodeIds.has(hoveredNode.id) && (
-                <span className="text-orange-400 font-bold">• RESTRICTED / SMOKE ZONE (ORANGE)</span>
+                <span className="text-amber-600 font-bold">• WARNING ZONE</span>
               )}
               {selectedRouteNodeIds.has(hoveredNode.id) && (
-                <span className="text-emerald-400 font-bold">• ON EVACUATION PATH (GREEN)</span>
+                <span className="text-emerald-600 font-bold">• ON ROUTE</span>
               )}
             </div>
           </div>
         )}
 
-        {/* ================= GOOGLE MAPS MOBILE BOTTOM HUD ================= */}
+        {/* ================= MOBILE BOTTOM HUD ================= */}
         {routeResult?.safe_route_found && (
-          <div className="absolute bottom-2 left-2 right-2 sm:hidden z-30 pointer-events-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl p-2.5 shadow-2xl flex items-center justify-between gap-3 text-white">
+          <div className="absolute bottom-2 left-2 right-2 sm:hidden z-30 pointer-events-auto bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-2.5 shadow-lg flex items-center justify-between gap-3 text-slate-900">
             <div className="min-w-0">
               <div className="flex items-center space-x-1.5">
-                <span className="text-base font-black text-emerald-400 font-mono">
+                <span className="text-base font-bold text-emerald-600 font-mono">
                   {routeResult.rset_formatted || '45s'}
                 </span>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-500">
                   ({routeResult.total_distance_meters || 65} m)
                 </span>
               </div>
-              <div className="text-[10px] text-slate-300 truncate">
-                Exit: <strong className="text-emerald-300">{routeResult.destination_node?.label || 'Safe Exit'}</strong>
+              <div className="text-[10px] text-slate-600 truncate">
+                Exit: <strong className="text-emerald-700">{routeResult.destination_node?.label || 'Safe Exit'}</strong>
               </div>
             </div>
 
@@ -964,7 +1022,7 @@ export default function MapCanvas({
               {voiceNav?.speakHazardWarning && (
                 <button
                   onClick={voiceNav.speakHazardWarning}
-                  className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow-md flex items-center justify-center"
+                  className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center justify-center"
                   title="Hear Voice Warning"
                 >
                   <Volume2 className="w-4 h-4" />
@@ -973,14 +1031,14 @@ export default function MapCanvas({
               {onOpenSosModal && (
                 <button
                   onClick={onOpenSosModal}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-md flex items-center space-x-1 ${
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-xs flex items-center space-x-1 ${
                     isSafetyOfficer || activeSos
-                      ? 'bg-red-600 hover:bg-red-500 text-white animate-pulse'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/[0.1]'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white text-slate-700 border border-slate-200'
                   }`}
                   title={isSafetyOfficer ? "Generate Campus S.O.S." : "View Campus S.O.S. Status"}
                 >
-                  <AlertOctagon className="w-3.5 h-3.5" />
+                  <AlertOctagon className="w-3.5 h-3.5 text-red-500" />
                   <span>{isSafetyOfficer ? 'SOS' : (activeSos ? 'SOS' : 'VIEW')}</span>
                 </button>
               )}
@@ -990,40 +1048,40 @@ export default function MapCanvas({
 
       </div>
 
-      {/* ================= BOTTOM LEGEND & EMERGENCY COLOR STATUS ================= */}
-      <div className="bg-slate-950/80 backdrop-blur-xl border-t border-white/[0.06] px-4 py-2.5 hidden sm:flex flex-wrap items-center justify-between gap-3 text-xs z-30">
+      {/* ================= BOTTOM MAP FOOTER STATUS ================= */}
+      <div className="bg-white border-t border-slate-200 px-4 py-2 hidden sm:flex flex-wrap items-center justify-between gap-3 text-xs z-30">
         
         {/* Color System Badges */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-slate-300 font-medium">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-slate-600 font-medium">
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></span>
-            <span className="text-slate-200">Red: Danger</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+            <span>Danger</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></span>
-            <span className="text-slate-200">Orange: Warning</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span>Warning</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
-            <span className="text-slate-200">Green: Safe Route</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+            <span>Safe Route</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></span>
-            <span className="text-slate-200">Blue: You</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+            <span>You</span>
           </div>
           <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-            <span className="text-slate-200">Grey: Blocked</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <span>Blocked</span>
           </div>
         </div>
 
         {/* Action Prompt */}
-        <div className="flex items-center space-x-2 text-[11px] text-slate-400">
+        <div className="flex items-center space-x-2 text-[11px] text-slate-500">
           <span>Click room on map to set location</span>
           {onOpenQrModal && (
             <button
               onClick={onOpenQrModal}
-              className="text-blue-400 hover:text-blue-300 font-bold underline ml-1"
+              className="text-blue-600 hover:text-blue-800 font-semibold underline ml-1"
             >
               Scan QR
             </button>

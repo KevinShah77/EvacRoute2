@@ -171,19 +171,19 @@ export default function SimulationDemoPage() {
   const destinationNode = pathNodes[pathNodes.length - 1];
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-5 space-y-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4">
       
       {/* Simulation Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 evac-card p-4 sm:p-5 rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center space-x-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center space-x-2">
             <span>Escape Simulation</span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-400/20 uppercase">
-              1-Click
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase">
+              Automated
             </span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Animated visual evacuation demo navigating around corridor fire to safety.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real-time egress simulation navigating around dynamic corridor hazards to safety.
           </p>
         </div>
 
@@ -195,43 +195,43 @@ export default function SimulationDemoPage() {
                 if (simCompleted) handleReset();
                 setSimRunning(true);
               }}
-              className="evac-btn-inset px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
             >
-              <Play className="w-4 h-4 fill-white" />
-              <span>{simCompleted ? 'Replay Simulation' : 'Start Escape Simulation'}</span>
+              <Play className="w-3.5 h-3.5 fill-white" />
+              <span>{simCompleted ? 'Replay Simulation' : 'Start Simulation'}</span>
             </button>
           ) : (
             <button
               onClick={() => setSimRunning(false)}
-              className="evac-btn-inset px-5 py-2.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-extrabold flex items-center space-x-2 shadow-lg shadow-amber-600/30 transition-all cursor-pointer"
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
             >
-              <Pause className="w-4 h-4 fill-white" />
+              <Pause className="w-3.5 h-3.5 fill-white" />
               <span>Pause</span>
             </button>
           )}
 
           <button
             onClick={handleReset}
-            className="p-2.5 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl border border-white/[0.08] shadow-md transition-all cursor-pointer"
+            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 transition-colors cursor-pointer"
             title="Reset to Start"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
 
           {/* Speed Multiplier */}
-          <div className="flex items-center bg-slate-950/80 border border-white/[0.08] rounded-xl p-1 text-xs">
-            <span className="text-slate-500 font-bold px-1.5 flex items-center space-x-1">
-              <Gauge className="w-3 h-3" />
+          <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5 text-xs">
+            <span className="text-slate-500 font-semibold px-1.5 flex items-center space-x-1">
+              <Gauge className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Speed:</span>
             </span>
             {[1, 2, 4].map(spd => (
               <button
                 key={spd}
                 onClick={() => setSimSpeed(spd)}
-                className={`px-2 py-0.5 rounded-lg font-mono font-bold text-[11px] transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded font-mono font-bold text-[11px] transition-colors cursor-pointer ${
                   simSpeed === spd
-                    ? 'bg-blue-600 text-white shadow-sm evac-btn-inset'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#0f172a] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {spd}x
@@ -242,28 +242,28 @@ export default function SimulationDemoPage() {
       </div>
 
       {/* Progress & Live Telemetry Bar */}
-      <div className="evac-card rounded-2xl p-3 border border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
+      <div className="bg-white rounded-xl p-3 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
-            <span className="text-slate-400">Step:</span>
-            <span className="text-white font-mono font-bold">{currentStepNum} / {pathNodes.length}</span>
+          <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
+            <span className="text-slate-500">Step:</span>
+            <span className="text-slate-900 font-mono font-bold">{currentStepNum} / {pathNodes.length}</span>
           </div>
 
-          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
-            <span className="text-slate-400">Time:</span>
-            <span className="text-emerald-400 font-mono font-bold">{elapsedTime}s</span>
+          <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
+            <span className="text-slate-500">Time:</span>
+            <span className="text-emerald-700 font-mono font-bold">{elapsedTime}s</span>
           </div>
 
-          <div className="flex items-center space-x-1.5 bg-slate-950/80 border border-white/[0.06] px-2.5 py-1.5 rounded-xl">
-            <span className="text-slate-400">Progress:</span>
-            <span className="text-blue-400 font-mono font-bold">{overallProgress}%</span>
+          <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
+            <span className="text-slate-500">Progress:</span>
+            <span className="text-blue-700 font-mono font-bold">{overallProgress}%</span>
           </div>
         </div>
 
         {/* Progress Bar Line */}
-        <div className="flex-1 min-w-[120px] max-w-xs bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+        <div className="flex-1 min-w-[120px] max-w-xs bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-emerald-400 h-full transition-all duration-150"
+            className="bg-emerald-600 h-full transition-all duration-150"
             style={{ width: `${overallProgress}%` }}
           />
         </div>
@@ -271,21 +271,21 @@ export default function SimulationDemoPage() {
 
       {/* Completion Banner */}
       {simCompleted && (
-        <div className="p-3.5 bg-emerald-950 border border-emerald-500 text-white rounded-2xl flex items-center justify-between gap-3 shadow-xl">
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-slate-900 rounded-xl flex items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-emerald-600 rounded-xl">
-              <CheckCircle2 className="w-5 h-5 text-white" />
+            <div className="p-2 bg-emerald-600 rounded-lg text-white">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm">Safe Exit Reached!</h3>
-              <p className="text-xs text-emerald-200">
+              <h3 className="font-bold text-sm text-emerald-950">Safe Exit Reached</h3>
+              <p className="text-xs text-emerald-800">
                 Arrived safely at <strong>{destinationNode?.label || 'Safe Exit'}</strong> in {elapsedTime} seconds.
               </p>
             </div>
           </div>
           <button
             onClick={handleReset}
-            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md"
+            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition-colors"
           >
             Replay
           </button>
