@@ -23,7 +23,8 @@ import { emergencyWS } from '../services/websocket';
 import { playEmergencySirenTone } from '../services/audioChime';
 
 export default function SosModal({ isOpen, onClose }) {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   const { 
     selectedFloor, 
     userLocationNode, 
@@ -156,43 +157,57 @@ export default function SosModal({ isOpen, onClose }) {
               <span className="font-bold text-white">{activeSos.floor} • {activeSos.location}</span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
-              <div className="flex items-center space-x-2">
+            {isSafetyOfficer ? (
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleClose}
+                    className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer"
+                  >
+                    Close Window
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (setActiveSos) setActiveSos(null);
+                      localStorage.removeItem('evacroute_active_sos');
+                    }}
+                    className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl text-xs font-semibold flex items-center space-x-1 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Send New SOS</span>
+                  </button>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      await resolveSosRequest(activeSos.id);
+                      handleClose();
+                    } catch (e) {
+                      alert('Error cancelling SOS');
+                    }
+                  }}
+                  className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"
+                >
+                  Mark Rescued / Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2 pt-2">
+                <span className="text-xs text-slate-400">
+                  Viewing active emergency SOS status broadcast by Campus Safety Command.
+                </span>
                 <button
                   onClick={handleClose}
-                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold cursor-pointer"
                 >
                   Close Window
                 </button>
-                <button
-                  onClick={() => {
-                    if (setActiveSos) setActiveSos(null);
-                    localStorage.removeItem('evacroute_active_sos');
-                  }}
-                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl text-xs font-semibold flex items-center space-x-1"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Send New SOS</span>
-                </button>
               </div>
-
-              <button
-                onClick={async () => {
-                  try {
-                    await resolveSosRequest(activeSos.id);
-                    handleClose();
-                  } catch (e) {
-                    alert('Error cancelling SOS');
-                  }
-                }}
-                className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md"
-              >
-                Mark Rescued / Cancel
-              </button>
-            </div>
+            )}
           </div>
-        ) : (
-          /* ================= INITIAL QUICK-SUBMIT FORM ================= */
+        ) : isSafetyOfficer ? (
+          /* ================= SAFETY OFFICER TRANSMIT SOS FORM ================= */
           <div className="py-4 space-y-4">
             
             {/* Auto-detected location summary pill */}
@@ -215,7 +230,7 @@ export default function SosModal({ isOpen, onClose }) {
                       key={opt.id}
                       type="button"
                       onClick={() => setSituation(opt.id)}
-                      className={`p-3 rounded-xl border text-left transition-all flex items-start space-x-2.5 ${
+                      className={`p-3 rounded-xl border text-left transition-all flex items-start space-x-2.5 cursor-pointer ${
                         isSelected
                           ? 'bg-red-950/80 border-red-500 shadow-md shadow-red-950/50 text-white ring-1 ring-red-500 evac-btn-inset'
                           : 'bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.06]'
@@ -239,7 +254,7 @@ export default function SosModal({ isOpen, onClose }) {
               </label>
               <input
                 type="text"
-                placeholder="e.g., 2 students trapped, heavy black smoke near door"
+                placeholder="e.g., 2 occupants trapped, heavy black smoke near door"
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-950/80 border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
@@ -264,6 +279,52 @@ export default function SosModal({ isOpen, onClose }) {
               <span>Campus Police Emergency Dispatch: <strong>+1-555-019-SAFE</strong></span>
             </div>
 
+          </div>
+        ) : (
+          /* ================= STUDENT VIEW-ONLY S.O.S. STATUS PANEL ================= */
+          <div className="py-4 space-y-4">
+            <div className="bg-slate-950/80 p-4 rounded-xl border border-white/[0.08] space-y-2.5">
+              <div className="flex items-center space-x-2 text-blue-400 font-bold text-sm">
+                <ShieldAlert className="w-5 h-5 flex-shrink-0" />
+                <span>Campus S.O.S. Status: Monitored</span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Students can view active SOS broadcasts. To ensure emergency dispatch authenticity, only <strong>Campus Safety Officers</strong> are authorized to generate new emergency S.O.S. broadcast alerts.
+              </p>
+            </div>
+
+            {/* Location snapshot */}
+            <div className="bg-slate-900/60 p-3 rounded-xl border border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-slate-400">Your Current Monitored Location:</span>
+              <span className="font-bold text-blue-400">{selectedFloor} • {roomLabel}</span>
+            </div>
+
+            {/* Life safety guidance for occupants */}
+            <div className="p-3.5 bg-red-950/30 border border-red-500/30 rounded-xl text-xs space-y-1.5 text-red-200">
+              <span className="font-bold uppercase tracking-wider block text-red-300">If You Require Immediate Rescue:</span>
+              <p className="text-slate-300 leading-relaxed">
+                If you are trapped or in danger, immediately dial Campus Emergency Dispatch or pull the nearest wall fire alarm. Stay low to the floor and seal doors against smoke.
+              </p>
+            </div>
+
+            {/* Direct Dispatch Phone Hotline */}
+            <div className="flex items-center justify-center space-x-2 text-xs text-slate-300 py-1 bg-slate-900/80 border border-slate-700/60 rounded-xl p-3">
+              <PhoneCall className="w-4 h-4 text-red-400 animate-pulse flex-shrink-0" />
+              <span>Campus Emergency Dispatch: <strong className="text-white font-mono">+1-555-019-SAFE</strong></span>
+            </div>
+
+            {/* Close Action Button */}
+            <div className="pt-2 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">
+                Switch to Command mode to test Safety Officer SOS transmission.
+              </span>
+              <button
+                onClick={handleClose}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold cursor-pointer"
+              >
+                Close Window
+              </button>
+            </div>
           </div>
         )}
 

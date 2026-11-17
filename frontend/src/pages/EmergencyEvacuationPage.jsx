@@ -6,6 +6,7 @@ import DistressSignalCard from '../components/DistressSignalCard';
 import QrScannerModal from '../components/QrScannerModal';
 import SosModal from '../components/SosModal';
 import { useEmergency } from '../context/EmergencyContext';
+import { useAuth } from '../context/AuthContext';
 import { cleanRoomNumber } from '../context/VoiceNavigationContext';
 import { 
   AlertOctagon, 
@@ -23,7 +24,9 @@ import {
   Layers,
   CheckCircle2,
   Clock,
-  Sparkles
+  Sparkles,
+  ListOrdered,
+  X
 } from 'lucide-react';
 
 // Clean raw node tokens like "F2-208" or "F1-105" from written instructions
@@ -55,9 +58,12 @@ function getStepIcon(iconType) {
 }
 
 export default function EmergencyEvacuationPage() {
+  const { role, user } = useAuth();
+  const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   const { 
     activeEmergency, 
     openSosModal,
+    activeSos,
     topology,
     routeResult,
     selectedRoute,
@@ -67,6 +73,7 @@ export default function EmergencyEvacuationPage() {
   } = useEmergency();
 
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
 
   // ================= ESCAPE SIMULATION STATE ON EVACUATION MAP =================
   const [simRunning, setSimRunning] = useState(false);
@@ -357,14 +364,39 @@ export default function EmergencyEvacuationPage() {
             </div>
           )}
 
-          {/* Prominent SOS Button */}
+          {/* Written Instructions Pop-Up Icon Button */}
+          <button
+            onClick={() => setIsInstructionsModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/[0.08] hover:border-blue-500/40 rounded-full text-xs font-semibold shadow-md transition-all cursor-pointer group"
+            title="Open Written Turn-by-Turn Evacuation Instructions"
+          >
+            <ListOrdered className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+            <span className="hidden sm:inline">Directions</span>
+            {steps.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">
+                {steps.length}
+              </span>
+            )}
+          </button>
+
+          {/* Prominent SOS Button (Safety Officer generates, Student views) */}
           <button
             onClick={openSosModal}
-            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white rounded-full text-xs font-black uppercase tracking-wider shadow-lg shadow-red-600/35 animate-pulse transition-all evac-btn-inset ring-1 ring-red-400/50"
-            title="Send Emergency Distress Signal"
+            className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider shadow-lg transition-all evac-btn-inset cursor-pointer ${
+              isSafetyOfficer
+                ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white shadow-red-600/35 ring-1 ring-red-400/50 animate-pulse'
+                : activeSos
+                  ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-red-600/35 ring-1 ring-red-400/50 animate-pulse'
+                  : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/[0.08] hover:border-red-500/40'
+            }`}
+            title={
+              isSafetyOfficer
+                ? "Broadcast Campus Emergency S.O.S. (Safety Officer)"
+                : (activeSos ? "View Active Campus S.O.S. Distress Signal" : "View Campus S.O.S. Status (Students View Only)")
+            }
           >
-            <AlertOctagon className="w-4 h-4 fill-white text-red-600 flex-shrink-0" />
-            <span>EMERGENCY S.O.S.</span>
+            <AlertOctagon className={`w-4 h-4 flex-shrink-0 ${isSafetyOfficer || activeSos ? 'fill-white text-red-600' : 'text-red-400'}`} />
+            <span>{isSafetyOfficer ? 'EMERGENCY S.O.S.' : (activeSos ? 'ACTIVE S.O.S.' : 'VIEW S.O.S.')}</span>
           </button>
 
           {/* Safe Arrival Check-In */}
@@ -388,27 +420,50 @@ export default function EmergencyEvacuationPage() {
       {/* Main Grid: Interactive Map + Voice Guidance Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
         
-        {/* Left Column: Interactive Vector Floor Map + Written Instructions Below */}
+        {/* Left Column: Interactive Vector Floor Map with Expanded Dimensions */}
         <div className="lg:col-span-7 xl:col-span-8 space-y-4">
           
-          {/* Interactive Map with Animated Escape Simulation Marker */}
+          {/* Interactive Map with Expanded Dimensions and Animated Escape Simulation Marker */}
           <MapCanvas 
             onOpenQrModal={() => setIsQrModalOpen(true)}
             onOpenSosModal={openSosModal}
+            onOpenInstructions={() => setIsInstructionsModalOpen(true)}
             simulationCoord={markerPos}
+            className="h-[650px] sm:h-[720px] lg:h-[800px] xl:h-[860px]"
           />
 
-          {/* Turn-by-Turn Written Instructions Below the Map - Mallow Clean Card */}
-          <div className="evac-card p-4 sm:p-6 space-y-4">
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.07] pb-3.5">
-              <div className="flex items-center space-x-3">
+        </div>
+
+        {/* Right Column: Voice Guidance Panel, Location Selector & Student Distress Signal */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4">
+          <VoiceNavPanel />
+          <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
+          <DistressSignalCard />
+        </div>
+
+      </div>
+
+      {/* Turn-by-Turn Written Instructions Pop-Up Modal (Dismissible via 'X' on top right) */}
+      {isInstructionsModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => setIsInstructionsModalOpen(false)}
+        >
+          <div 
+            className="evac-card max-w-2xl w-full max-h-[85vh] rounded-2xl border border-blue-500/40 shadow-[0_0_50px_rgba(59,130,246,0.25)] flex flex-col overflow-hidden text-slate-100 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between gap-3 bg-slate-950/60">
+              <div className="flex items-center space-x-3 min-w-0">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 text-blue-400 border border-blue-500/30 flex items-center justify-center flex-shrink-0 shadow-sm">
                   <Navigation className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center space-x-2 flex-wrap">
-                    <span>Turn-by-Turn Evacuation Instructions</span>
+                <div className="min-w-0">
+                  <div className="flex items-center space-x-2 flex-wrap">
+                    <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight">
+                      Turn-by-Turn Evacuation Instructions
+                    </h3>
                     {simRunning && (
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-wider animate-pulse shadow-sm ${
                         selectedRoute === 'backup'
@@ -418,45 +473,59 @@ export default function EmergencyEvacuationPage() {
                         Simulating {selectedRoute === 'backup' ? 'Alt ' : ''}Step {currentStepNum}
                       </span>
                     )}
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Step-by-step guidance navigating to <strong>{destinationExitLabel}</strong> {selectedRoute === 'backup' ? '(via Alt Safe Route)' : ''} avoiding all hazards
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">
+                    Navigating to <strong className="text-white">{destinationExitLabel}</strong> {selectedRoute === 'backup' ? '(via Alt Safe Route)' : ''}
                   </p>
                 </div>
               </div>
 
-              {routeResult && (
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-950/60 border border-white/[0.08] shadow-sm">
+              {/* Dismiss Cross Icon on Top Right */}
+              <button
+                onClick={() => setIsInstructionsModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/[0.08] transition-colors flex-shrink-0 cursor-pointer"
+                title="Dismiss Instructions"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Summary Telemetry Strip */}
+            {routeResult && (
+              <div className="px-4 py-2.5 bg-slate-900/60 border-b border-white/[0.06] flex items-center justify-between gap-2 text-xs flex-wrap">
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-1.5">
                     <Clock className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="text-slate-400">Est. Time:</span>
                     <strong className="text-white font-mono">{routeResult.rset_formatted}</strong>
                   </div>
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-950/60 border border-white/[0.08] shadow-sm">
+                  <div className="flex items-center space-x-1.5">
                     <Footprints className="w-3.5 h-3.5 text-blue-400" />
-                    <span className="text-slate-400">Total:</span>
+                    <span className="text-slate-400">Total Distance:</span>
                     <strong className="text-white font-mono">{routeResult.total_distance_meters} m</strong>
                   </div>
                 </div>
-              )}
-            </div>
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">
+                  {steps.length} Steps Total
+                </span>
+              </div>
+            )}
 
-            {/* Written Step-by-Step Card List */}
-            {steps.length > 0 ? (
-              <div className="space-y-2">
-                {steps.map((st, idx) => {
+            {/* Scrollable Step-by-Step Instructions */}
+            <div className="p-4 sm:p-5 overflow-y-auto space-y-2.5 flex-1">
+              {steps.length > 0 ? (
+                steps.map((st, idx) => {
                   const isCurrentActiveStep = simRunning && idx === currentSegRef.current;
                   return (
                     <div
                       key={idx}
                       className={`p-3.5 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
                         isCurrentActiveStep
-                          ? 'bg-blue-950/50 border-blue-500/80 shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
+                          ? 'bg-blue-950/60 border-blue-500/80 shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
                           : 'bg-slate-950/50 border-white/[0.06] hover:border-white/[0.14] hover:bg-slate-900/40'
                       }`}
                     >
                       <div className="flex items-start space-x-3 min-w-0">
-                        {/* Step Number / Icon Badge */}
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-black shadow-sm ${
                           isCurrentActiveStep
                             ? 'bg-blue-600 text-white shadow-blue-500/40 animate-pulse'
@@ -464,10 +533,8 @@ export default function EmergencyEvacuationPage() {
                         }`}>
                           {st.step_number || idx + 1}
                         </div>
-
-                        {/* Instruction Direction & Text */}
                         <div className="min-w-0 space-y-0.5">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 flex-wrap">
                             {getStepIcon(st.icon)}
                             <span className="font-bold text-xs sm:text-sm text-white">
                               {st.short_direction || 'Advance Safely'}
@@ -483,8 +550,6 @@ export default function EmergencyEvacuationPage() {
                           </p>
                         </div>
                       </div>
-
-                      {/* Distance & Safe Status Pill */}
                       <div className="flex flex-col items-end flex-shrink-0 space-y-1.5">
                         <span className="text-[11px] font-mono font-bold text-slate-300 bg-slate-900/80 border border-white/[0.08] px-2.5 py-0.5 rounded-full">
                           {st.distance_meters > 0 ? `${st.distance_meters} m` : 'Start'}
@@ -496,37 +561,31 @@ export default function EmergencyEvacuationPage() {
                       </div>
                     </div>
                   );
-                })}
-              </div>
-            ) : (
-              <div className="p-4 text-center text-xs text-slate-400 bg-slate-950 rounded-xl border border-slate-800">
-                Turn-by-turn written route instructions will appear once route calculation completes.
-              </div>
-            )}
-
-            {/* Safe Arrival Footer Notice */}
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="flex items-center space-x-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>All listed corridors actively monitored & verified clear of active hazards.</span>
-              </span>
-              <span className="font-semibold text-slate-300">
-                Follow green directional signage
-              </span>
+                })
+              ) : (
+                <div className="p-6 text-center text-xs text-slate-400 bg-slate-950 rounded-xl border border-slate-800">
+                  Turn-by-turn written route instructions will appear once route calculation completes.
+                </div>
+              )}
             </div>
 
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-white/[0.08] bg-slate-950/70 flex items-center justify-between text-[11px] text-slate-400">
+              <span className="flex items-center space-x-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">All listed corridors actively monitored & verified clear of active hazards.</span>
+                <span className="sm:hidden">Corridors clear of active hazards.</span>
+              </span>
+              <button
+                onClick={() => setIsInstructionsModalOpen(false)}
+                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
           </div>
-
         </div>
-
-        {/* Right Column: Voice Guidance Panel, Location Selector & Student Distress Signal */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-4">
-          <VoiceNavPanel />
-          <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
-          <DistressSignalCard />
-        </div>
-
-      </div>
+      )}
 
       {/* QR Scanner & Assembly Check-in Modal */}
       <QrScannerModal

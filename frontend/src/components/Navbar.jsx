@@ -14,8 +14,9 @@ import { useEmergency } from '../context/EmergencyContext';
 import { requestNotificationPermissionAndSubscribe } from '../services/pushNotifications';
 
 export default function Navbar() {
-  const { role, quickDemoLogin } = useAuth();
-  const { activeEmergency, openSosModal } = useEmergency();
+  const { role, user, quickDemoLogin } = useAuth();
+  const { activeEmergency, openSosModal, activeSos } = useEmergency();
+  const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   const location = useLocation();
   const [subscribing, setSubscribing] = useState(false);
   const [pushStatus, setPushStatus] = useState(
@@ -112,15 +113,29 @@ export default function Navbar() {
             {/* Right Actions: Direct SOS Trigger & Alerts */}
             <div className="flex items-center space-x-2 sm:space-x-2.5">
               
-              {/* Prominent Emergency SOS button in header */}
+              {/* Emergency SOS button in header (Safety Officer generates, Occupant views) */}
               <button
                 onClick={openSosModal}
-                className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white rounded-full text-xs font-black uppercase tracking-wider shadow-lg shadow-red-600/30 evac-btn-inset ring-1 ring-red-400/40"
-                title="Immediate Emergency SOS Distress Alert"
+                className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg transition-all evac-btn-inset cursor-pointer ${
+                  isSafetyOfficer
+                    ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white shadow-red-600/30 ring-1 ring-red-400/40 animate-pulse'
+                    : activeSos
+                      ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 text-white shadow-red-600/30 ring-1 ring-red-400/40 animate-pulse'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/[0.08] hover:border-red-500/40'
+                }`}
+                title={
+                  isSafetyOfficer 
+                    ? "Broadcast Emergency S.O.S. (Safety Officer)" 
+                    : (activeSos ? "View Active Emergency S.O.S. Alert" : "View Campus S.O.S. Status (Students View Only)")
+                }
               >
-                <AlertOctagon className="w-3.5 h-3.5 fill-white text-red-600 flex-shrink-0" />
-                <span className="hidden sm:inline">EMERGENCY SOS</span>
-                <span className="sm:hidden font-extrabold">SOS</span>
+                <AlertOctagon className={`w-3.5 h-3.5 flex-shrink-0 ${isSafetyOfficer || activeSos ? 'fill-white text-red-600' : 'text-red-400'}`} />
+                <span className="hidden sm:inline">
+                  {isSafetyOfficer ? 'EMERGENCY SOS' : (activeSos ? 'ACTIVE SOS' : 'VIEW SOS')}
+                </span>
+                <span className="sm:hidden font-extrabold">
+                  {isSafetyOfficer ? 'SOS' : (activeSos ? 'SOS' : 'VIEW')}
+                </span>
               </button>
 
               {/* Push Notifications Button */}

@@ -18,7 +18,8 @@ import {
   EyeOff,
   Move,
   AlertOctagon,
-  Volume2
+  Volume2,
+  ListOrdered
 } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { useAuth } from '../context/AuthContext';
@@ -38,7 +39,9 @@ export default function MapCanvas({
   onOpenQrModal,
   simulationCoord = null,
   onOpenSosModal = null,
-  isMobileView = false
+  onOpenInstructions = null,
+  isMobileView = false,
+  className = ''
 }) {
   const { 
     topology, 
@@ -50,9 +53,11 @@ export default function MapCanvas({
     routeResult,
     selectedRoute,
     setSelectedRoute,
-    accessibleMode 
+    accessibleMode,
+    activeSos
   } = useEmergency();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
+  const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   
   let voiceNav = null;
   try {
@@ -287,7 +292,7 @@ export default function MapCanvas({
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-[520px] sm:h-[580px] lg:h-[620px] evac-card rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden select-none flex flex-col"
+      className={`relative w-full ${className || 'h-[640px] sm:h-[720px] lg:h-[780px] xl:h-[840px]'} evac-card rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden select-none flex flex-col`}
     >
       {/* ================= GOOGLE MAPS STYLE MOBILE NAVIGATION BANNER ================= */}
       <div className="absolute top-2 left-2 right-2 sm:hidden z-40 pointer-events-auto bg-slate-950/85 backdrop-blur-xl border border-emerald-500/40 rounded-2xl p-2.5 shadow-2xl flex items-center justify-between gap-2 text-white">
@@ -311,15 +316,20 @@ export default function MapCanvas({
         {onOpenSosModal && (
           <button
             onClick={onOpenSosModal}
-            className="px-2.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1 flex-shrink-0 animate-pulse evac-btn-inset shadow-md"
+            className={`px-2.5 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider flex items-center space-x-1 flex-shrink-0 evac-btn-inset shadow-md transition-all ${
+              isSafetyOfficer || activeSos
+                ? 'bg-red-600 hover:bg-red-500 text-white animate-pulse ring-1 ring-red-400/50'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/[0.1]'
+            }`}
+            title={isSafetyOfficer ? "Generate Campus S.O.S. (Safety Officer)" : (activeSos ? "View Active S.O.S." : "View S.O.S. Status (Students View Only)")}
           >
             <AlertOctagon className="w-3.5 h-3.5" />
-            <span>SOS</span>
+            <span>{isSafetyOfficer ? 'SOS' : (activeSos ? 'SOS' : 'VIEW')}</span>
           </button>
         )}
       </div>
 
-      {/* ================= MOBILE FLOATING CONTROLS (VERTICAL FLOORS, VOICE, RECENTER) ================= */}
+      {/* ================= MOBILE FLOATING CONTROLS (VERTICAL FLOORS, INSTRUCTIONS, VOICE, RECENTER) ================= */}
       <div className="absolute top-16 right-2 sm:hidden z-30 flex flex-col space-y-1.5 pointer-events-auto">
         <div className="bg-slate-950/85 backdrop-blur-xl p-1 rounded-2xl border border-white/[0.08] shadow-xl flex flex-col space-y-1">
           {floors.map(floor => {
@@ -339,6 +349,15 @@ export default function MapCanvas({
             );
           })}
         </div>
+        {onOpenInstructions && (
+          <button
+            onClick={onOpenInstructions}
+            className="w-8 h-8 bg-slate-950/85 backdrop-blur-xl border border-white/[0.08] rounded-xl flex items-center justify-center text-blue-400 shadow-lg hover:text-white transition-colors"
+            title="View Turn-by-Turn Instructions"
+          >
+            <ListOrdered className="w-4 h-4" />
+          </button>
+        )}
         <button
           onClick={centerOnUser}
           className="w-8 h-8 bg-slate-950/85 backdrop-blur-xl border border-white/[0.08] rounded-xl flex items-center justify-center text-blue-400 shadow-lg hover:text-white transition-colors"
@@ -456,8 +475,18 @@ export default function MapCanvas({
             )}
           </div>
 
-          {/* Zoom & View Controls */}
+          {/* Zoom & View Controls + Directions Pop-Up Trigger */}
           <div className="flex items-center space-x-0.5 bg-slate-950/80 backdrop-blur-xl p-1 px-1.5 rounded-full border border-white/[0.08] shadow-xl">
+            {onOpenInstructions && (
+              <button
+                onClick={onOpenInstructions}
+                className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors flex items-center space-x-1"
+                title="View Turn-by-Turn Instructions"
+              >
+                <ListOrdered className="w-4 h-4 text-blue-400" />
+                <span className="text-[11px] font-semibold pr-1 hidden lg:inline">Steps</span>
+              </button>
+            )}
             <button
               onClick={centerOnUser}
               className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"
@@ -950,10 +979,15 @@ export default function MapCanvas({
               {onOpenSosModal && (
                 <button
                   onClick={onOpenSosModal}
-                  className="px-2.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-black uppercase tracking-wider shadow-md animate-pulse flex items-center space-x-1"
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-md flex items-center space-x-1 ${
+                    isSafetyOfficer || activeSos
+                      ? 'bg-red-600 hover:bg-red-500 text-white animate-pulse'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/[0.1]'
+                  }`}
+                  title={isSafetyOfficer ? "Generate Campus S.O.S." : "View Campus S.O.S. Status"}
                 >
                   <AlertOctagon className="w-3.5 h-3.5" />
-                  <span>SOS</span>
+                  <span>{isSafetyOfficer ? 'SOS' : (activeSos ? 'SOS' : 'VIEW')}</span>
                 </button>
               )}
             </div>

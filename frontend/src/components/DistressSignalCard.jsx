@@ -17,7 +17,8 @@ import { useEmergency } from '../context/EmergencyContext';
 import { cleanRoomNumber } from '../context/VoiceNavigationContext';
 
 export default function DistressSignalCard() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const isSafetyOfficer = role === 'admin' || user?.role === 'admin';
   const { 
     selectedFloor, 
     userLocationNode, 
@@ -235,33 +236,39 @@ export default function DistressSignalCard() {
             <span className="font-bold text-amber-400">Stay Low</span>
           </div>
 
-          {/* Action Buttons: Cancel / Send New */}
-          <div className="flex items-center space-x-2 pt-1">
-            <button
-              type="button"
-              onClick={handleCancelDistress}
-              className="flex-1 py-2 bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1 cursor-pointer"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Mark Rescued / Safe</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (setActiveSos) setActiveSos(null);
-                localStorage.removeItem('evacroute_active_sos');
-                setSubmitSuccess(false);
-              }}
-              className="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center space-x-1 cursor-pointer"
-              title="Send another distress update"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Update</span>
-            </button>
-          </div>
+          {/* Action Buttons: Cancel / Send New (Safety Officer Only) */}
+          {isSafetyOfficer ? (
+            <div className="flex items-center space-x-2 pt-1">
+              <button
+                type="button"
+                onClick={handleCancelDistress}
+                className="flex-1 py-2 bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1 cursor-pointer"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Mark Rescued / Safe</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (setActiveSos) setActiveSos(null);
+                  localStorage.removeItem('evacroute_active_sos');
+                  setSubmitSuccess(false);
+                }}
+                className="px-3 py-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center space-x-1 cursor-pointer"
+                title="Send another distress update"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Update</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-1 text-[11px] text-slate-400 text-center">
+              Active distress signal broadcast to Campus Safety Command and First Responders.
+            </div>
+          )}
         </div>
-      ) : (
-        /* ================= FORM INPUT STATE ================= */
+      ) : isSafetyOfficer ? (
+        /* ================= SAFETY OFFICER DISTRESS DISPATCH FORM ================= */
         <form onSubmit={handleSendDistress} className="space-y-3 relative z-10 text-xs">
           
           {submitError && (
@@ -274,7 +281,7 @@ export default function DistressSignalCard() {
           <div className="space-y-1">
             <label className="text-[11px] font-semibold text-slate-300 flex items-center space-x-1.5">
               <User className="w-3.5 h-3.5 text-blue-400" />
-              <span>Enter Your Name:</span>
+              <span>Enter Occupant / Reporter Name:</span>
             </label>
             <input
               type="text"
@@ -291,7 +298,7 @@ export default function DistressSignalCard() {
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-semibold text-slate-300 flex items-center space-x-1.5">
                 <DoorClosed className="w-3.5 h-3.5 text-red-400" />
-                <span>What room are you blocked in?</span>
+                <span>What room is blocked / trapped?</span>
               </label>
               <span className="text-[10px] text-slate-400">e.g. 208, 205, 310</span>
             </div>
@@ -321,7 +328,7 @@ export default function DistressSignalCard() {
                     key={opt.id}
                     type="button"
                     onClick={() => setSituationType(opt.id)}
-                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all truncate text-center ${
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all truncate text-center cursor-pointer ${
                       isSelected
                         ? 'bg-red-600 text-white shadow-md shadow-red-600/30 border border-red-400/50 evac-btn-inset'
                         : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/[0.08]'
@@ -370,6 +377,39 @@ export default function DistressSignalCard() {
           </div>
 
         </form>
+      ) : (
+        /* ================= STUDENT VIEW-ONLY DISTRESS MONITOR ================= */
+        <div className="space-y-3 relative z-10 text-xs">
+          <div className="p-3 bg-slate-950/80 rounded-xl border border-white/[0.08] space-y-2">
+            <div className="flex items-center space-x-2 text-slate-300 font-bold">
+              <ShieldAlert className="w-4 h-4 text-emerald-400" />
+              <span>Distress Monitoring: Monitored</span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Occupant distress signals and SOS alerts are managed by Campus Safety Command. Only Safety Officers can generate an active distress dispatch.
+            </p>
+          </div>
+
+          <div className="p-3 bg-slate-950/80 rounded-xl border border-white/[0.06] flex items-center justify-between text-[11px]">
+            <span className="text-slate-400">Current Room:</span>
+            <span className="font-bold text-blue-400">{selectedFloor} • Room {blockedRoom || '208'}</span>
+          </div>
+
+          <div className="p-3 bg-red-950/30 border border-red-500/30 rounded-xl text-[11px] text-red-200 space-y-1">
+            <span className="font-bold uppercase tracking-wider block text-red-300">If Blocked or Trapped:</span>
+            <p className="text-slate-300 leading-relaxed">
+              Dial Campus Police Emergency Dispatch immediately or notify your floor marshal. Keep doors sealed with cloth against smoke.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+            <span className="flex items-center space-x-1">
+              <PhoneCall className="w-3.5 h-3.5 text-red-400" />
+              <span>Emergency Dispatch:</span>
+            </span>
+            <strong className="text-red-300 font-mono">+1-555-019-SAFE</strong>
+          </div>
+        </div>
       )}
 
     </div>
