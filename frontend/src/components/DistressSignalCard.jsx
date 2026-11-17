@@ -305,16 +305,15 @@ export default function DistressSignalCard() {
             />
           </div>
 
-          {/* 3. Emergency Situation Pills */}
+          {/* 3. Emergency Condition Test Cases (2 options) */}
           <div className="space-y-1 pt-0.5">
             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
               Emergency Condition:
             </span>
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-2 gap-2">
               {[
                 { id: 'BLOCKED', label: 'Blocked in Room' },
-                { id: 'FIRE', label: 'Flames / Fire' },
-                { id: 'TRAPPED', label: 'Trapped / Smoke' },
+                { id: 'FIRE', label: 'Active Fire / Smoke' },
               ].map(opt => {
                 const isSelected = situationType === opt.id;
                 return (
@@ -322,7 +321,7 @@ export default function DistressSignalCard() {
                     key={opt.id}
                     type="button"
                     onClick={() => setSituationType(opt.id)}
-                    className={`py-1.5 px-2 rounded-xl text-[10px] font-bold transition-all truncate ${
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all truncate text-center ${
                       isSelected
                         ? 'bg-red-600 text-white shadow-md shadow-red-600/30 border border-red-400/50 evac-btn-inset'
                         : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/[0.08]'

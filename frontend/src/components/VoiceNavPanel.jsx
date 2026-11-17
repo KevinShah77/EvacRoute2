@@ -230,7 +230,7 @@ export default function VoiceNavPanel() {
 
         {/* Dynamic Incident Notification Controls: ONLY FOR ADMIN */}
         {isAdmin && (
-          <div className="mt-3.5 pt-3.5 border-t border-red-800/30 space-y-2">
+          <div className="mt-3.5 pt-3.5 border-t border-red-800/30 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-300 flex items-center space-x-1.5">
                 <Flame className="w-3.5 h-3.5 text-amber-400" />
@@ -239,7 +239,7 @@ export default function VoiceNavPanel() {
               <span className="text-[10px] text-amber-400/90 font-mono bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-500/30">Admin Only</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-2">
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 block mb-1">
                   Cause:
@@ -247,7 +247,7 @@ export default function VoiceNavPanel() {
                 <select
                   value={incidentCause}
                   onChange={handleCauseChange}
-                  className="w-full bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-2.5 py-1.5 text-xs text-white font-medium outline-none transition-colors"
+                  className="w-full bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-3 py-1.5 text-xs text-white font-medium outline-none transition-colors"
                 >
                   <option value="fire">Fire Emergency</option>
                   <option value="smoke">Heavy Smoke</option>
@@ -261,14 +261,14 @@ export default function VoiceNavPanel() {
                 <label className="text-[10px] font-semibold text-slate-400 block mb-1">
                   Room Number:
                 </label>
-                <div className="flex items-center space-x-1.5">
+                <div className="flex items-center space-x-2">
                   <input
                     type="text"
                     value={incidentRoom}
                     onChange={handleIncidentRoomChange}
                     onKeyDown={handleIncidentRoomKeyDown}
                     placeholder="e.g. 205, 208, 420..."
-                    className="flex-1 bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-2.5 py-1.5 text-xs text-white font-medium placeholder-slate-500 outline-none shadow-inner transition-colors"
+                    className="flex-1 min-w-0 bg-slate-950/90 border border-white/[0.1] focus:border-red-500 rounded-xl px-3 py-1.5 text-xs text-white font-semibold placeholder-slate-500 outline-none shadow-inner transition-colors"
                   />
                   <button
                     type="button"
@@ -277,7 +277,7 @@ export default function VoiceNavPanel() {
                       commitIncidentAlert(incidentCause, incidentRoom);
                     }}
                     onClick={() => commitIncidentAlert(incidentCause, incidentRoom)}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex-shrink-0 cursor-pointer"
+                    className="evac-btn-inset px-4 py-1.5 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex-shrink-0 cursor-pointer"
                     title="Apply Incident Room"
                   >
                     Set
