@@ -238,9 +238,9 @@ export default function DistressSignalCard() {
             <button
               type="button"
               onClick={handleCancelDistress}
-              className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors shadow-xs flex items-center justify-center space-x-1 cursor-pointer"
+              className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs sm:text-sm font-bold transition-colors shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer"
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-4 h-4" />
               <span>Mark Rescued / Safe</span>
             </button>
             <button
@@ -250,27 +250,27 @@ export default function DistressSignalCard() {
                 localStorage.removeItem('evacroute_active_sos');
                 setSubmitSuccess(false);
               }}
-              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200 transition-colors flex items-center space-x-1 cursor-pointer"
+              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs sm:text-sm font-bold border border-slate-200 transition-colors flex items-center space-x-1.5 cursor-pointer"
               title="Send another distress update"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
               <span>Update</span>
             </button>
           </div>
         </div>
       ) : (
         /* ================= OCCUPANT ROOM-TRAPPED DISTRESS DISPATCH FORM ================= */
-        <form onSubmit={handleSendDistress} className="space-y-3 text-xs">
+        <form onSubmit={handleSendDistress} className="space-y-3.5 text-xs">
           
           {submitError && (
-            <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-[11px] font-semibold">
+            <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs font-semibold">
               ⚠️ {submitError}
             </div>
           )}
 
           {/* 1. Occupant Name Box */}
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-slate-700 flex items-center space-x-1.5">
+            <label className="text-xs font-semibold text-slate-700 flex items-center space-x-1.5">
               <User className="w-3.5 h-3.5 text-blue-600" />
               <span>{isSafetyOfficer ? 'Occupant / Reporter Name:' : 'Your Name:'}</span>
             </label>
@@ -280,18 +280,18 @@ export default function DistressSignalCard() {
               value={studentName}
               onChange={(e) => setStudentName(e.target.value)}
               placeholder="e.g. Alex Chen"
-              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors"
             />
           </div>
 
           {/* 2. Blocked Room Box */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] font-semibold text-slate-700 flex items-center space-x-1.5">
+              <label className="text-xs font-semibold text-slate-700 flex items-center space-x-1.5">
                 <DoorClosed className="w-3.5 h-3.5 text-red-600" />
                 <span>{isSafetyOfficer ? 'Blocked Room Number:' : 'What room are you in?'}</span>
               </label>
-              <span className="text-[10px] text-slate-400">e.g. 208, 205</span>
+              <span className="text-[11px] text-slate-400">e.g. 208, 205</span>
             </div>
             <input
               type="text"
@@ -299,13 +299,13 @@ export default function DistressSignalCard() {
               value={blockedRoom}
               onChange={(e) => setBlockedRoom(e.target.value)}
               placeholder="Enter room number (e.g. 208)..."
-              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 font-semibold outline-none transition-colors"
             />
           </div>
 
           {/* 3. Emergency Condition Test Cases */}
-          <div className="space-y-1 pt-0.5">
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
+          <div className="space-y-1.5 pt-0.5">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Emergency Condition:
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -319,7 +319,7 @@ export default function DistressSignalCard() {
                     key={opt.id}
                     type="button"
                     onClick={() => setSituationType(opt.id)}
-                    className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-colors truncate text-center cursor-pointer ${
+                    className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-bold transition-colors truncate text-center cursor-pointer ${
                       isSelected
                         ? 'bg-red-600 text-white shadow-xs'
                         : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
@@ -334,7 +334,7 @@ export default function DistressSignalCard() {
 
           {/* Optional Short Note */}
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold text-slate-500 block">
+            <label className="text-[11px] font-semibold text-slate-500 block">
               Additional Details (Optional):
             </label>
             <input
@@ -342,16 +342,16 @@ export default function DistressSignalCard() {
               value={additionalNotes}
               onChange={(e) => setAdditionalNotes(e.target.value)}
               placeholder="e.g. 2 occupants, heavy smoke"
-              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none transition-colors"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-red-500 focus:bg-white rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors"
             />
           </div>
 
           {/* 4. Large Distress Button */}
-          <div className="pt-0.5">
+          <div className="pt-1">
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white font-bold text-xs tracking-wider uppercase rounded-lg shadow-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+              className="w-full py-2.5 sm:py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white font-bold text-xs sm:text-sm tracking-wider uppercase rounded-lg shadow-sm flex items-center justify-center space-x-2 transition-colors cursor-pointer"
             >
               <AlertOctagon className="w-4 h-4 flex-shrink-0" />
               <span>{submitting ? 'Transmitting Distress Call...' : 'SEND DISTRESS SIGNAL'}</span>

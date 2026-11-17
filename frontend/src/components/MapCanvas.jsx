@@ -385,7 +385,7 @@ export default function MapCanvas({
       <div className="hidden sm:flex absolute top-3 left-3 right-3 z-30 items-center justify-between gap-2 pointer-events-none">
         
         {/* Floor Selection Buttons (Clean Enterprise Tabs) */}
-        <div className="flex items-center space-x-1 bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm pointer-events-auto">
+        <div className="flex items-center space-x-1.5 bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm pointer-events-auto">
           {floors.map(floor => {
             const hasDangerOnFloor = hazards.some(h => h.floor === floor && h.is_active !== false && (h.hazard_type || '').toLowerCase() !== 'smoke');
             const hasSmokeOnFloor = hazards.some(h => h.floor === floor && h.is_active !== false && (h.hazard_type || '').toLowerCase() === 'smoke');
@@ -396,7 +396,7 @@ export default function MapCanvas({
               <button
                 key={floor}
                 onClick={() => setSelectedFloor(floor)}
-                className={`relative px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                className={`relative px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                   isSelected
                     ? 'bg-[#0f172a] text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -424,10 +424,10 @@ export default function MapCanvas({
           
           {/* Route Visibility Toggle: Primary vs Alternative */}
           {routeResult?.safe_route_found && (
-            <div className="flex items-center bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm">
+            <div className="flex items-center space-x-1 bg-white/95 backdrop-blur-sm p-1 rounded-lg border border-slate-200 shadow-sm">
               <button
                 onClick={() => setSelectedRoute('primary')}
-                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                   selectedRoute === 'primary'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -441,7 +441,7 @@ export default function MapCanvas({
               {routeResult.backup_path_node_ids && routeResult.backup_path_node_ids.length > 0 && (
                 <button
                   onClick={() => setSelectedRoute('backup')}
-                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                     selectedRoute === 'backup'
                       ? 'bg-amber-600 text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'

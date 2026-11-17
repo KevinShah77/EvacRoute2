@@ -163,7 +163,7 @@ export default function VoiceNavPanel() {
             {assistantStatus === 'SPEAKING' ? (
               <button
                 onClick={stopNavigation}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs"
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center space-x-1.5 shadow-xs cursor-pointer"
               >
                 <Square className="w-3.5 h-3.5" />
                 <span>Stop</span>
@@ -171,13 +171,13 @@ export default function VoiceNavPanel() {
             ) : (
               <button
                 onClick={speakHazardWarning}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs flex items-center space-x-1.5 transition-colors ${
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-xs flex items-center space-x-1.5 transition-colors cursor-pointer ${
                   hasEmergency 
                     ? 'bg-red-600 hover:bg-red-700 text-white' 
                     : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                 }`}
               >
-                <Volume2 className="w-3.5 h-3.5" />
+                <Volume2 className="w-4 h-4" />
                 <span>Play Voice Alert</span>
               </button>
             )}
@@ -186,7 +186,7 @@ export default function VoiceNavPanel() {
             <div className="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5 text-xs">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-2 py-0.5 rounded font-bold text-[11px] transition-colors ${
+                className={`px-2.5 py-1 rounded font-bold text-xs transition-colors cursor-pointer ${
                   language === 'en'
                     ? 'bg-white text-blue-600 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -196,7 +196,7 @@ export default function VoiceNavPanel() {
               </button>
               <button
                 onClick={() => setLanguage('hi')}
-                className={`px-2 py-0.5 rounded font-bold text-[11px] transition-colors ${
+                className={`px-2.5 py-1 rounded font-bold text-xs transition-colors cursor-pointer ${
                   language === 'hi'
                     ? 'bg-white text-orange-600 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -210,16 +210,16 @@ export default function VoiceNavPanel() {
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleMute}
-              className={`p-1.5 rounded-lg border text-xs transition-colors ${
+              className={`p-2 rounded-lg border text-xs transition-colors cursor-pointer ${
                 isMuted
                   ? 'bg-red-50 text-red-600 border-red-200'
                   : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50'
               }`}
               title={isMuted ? 'Unmute' : 'Mute'}
             >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
               assistantStatus === 'SPEAKING' ? 'bg-emerald-100 text-emerald-800 animate-pulse' :
               'bg-slate-100 text-slate-600'
             }`}>
@@ -268,7 +268,7 @@ export default function VoiceNavPanel() {
                     onChange={handleIncidentRoomChange}
                     onKeyDown={handleIncidentRoomKeyDown}
                     placeholder="e.g. 205, 208, 420..."
-                    className="flex-1 min-w-0 bg-slate-50 border border-slate-200 focus:border-red-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold placeholder-slate-400 outline-none transition-colors"
+                    className="flex-1 min-w-0 bg-slate-50 border border-slate-200 focus:border-red-500 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-800 font-semibold placeholder-slate-400 outline-none transition-colors"
                   />
                   <button
                     type="button"
@@ -277,7 +277,7 @@ export default function VoiceNavPanel() {
                       commitIncidentAlert(incidentCause, incidentRoom);
                     }}
                     onClick={() => commitIncidentAlert(incidentCause, incidentRoom)}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors flex-shrink-0 cursor-pointer"
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs sm:text-sm font-bold shadow-xs transition-colors flex-shrink-0 cursor-pointer"
                     title="Apply Incident Room"
                   >
                     Set

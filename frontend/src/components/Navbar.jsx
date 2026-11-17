@@ -31,8 +31,6 @@ export default function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
-  const [campusDropdownOpen, setCampusDropdownOpen] = useState(false);
-  const [selectedCampus, setSelectedCampus] = useState('West Campus Annex');
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const [pushStatus, setPushStatus] = useState(
@@ -51,13 +49,6 @@ export default function Navbar() {
       setSubscribing(false);
     }
   };
-
-  const campuses = [
-    'West Campus Annex',
-    'Riverside University',
-    'Main Academic Complex',
-    'Science & Engineering Hall'
-  ];
 
   // Overhead Navigation Links (merged into overhead header like previous design)
   const navLinks = [
@@ -102,39 +93,10 @@ export default function Navbar() {
           {/* Thin vertical hairline divider */}
           <div className="hidden md:block h-5 w-px bg-slate-200"></div>
 
-          {/* Campus Selector Dropdown */}
-          <div className="relative hidden md:block">
-            <button
-              onClick={() => setCampusDropdownOpen(!campusDropdownOpen)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-800 hover:bg-slate-50 transition-colors text-xs sm:text-sm font-semibold border border-slate-200/80 hover:border-slate-300 cursor-pointer"
-            >
-              <Landmark className="w-4 h-4 text-slate-700 flex-shrink-0" />
-              <span className="truncate max-w-[150px]">{selectedCampus}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
-            </button>
-
-            {campusDropdownOpen && (
-              <div className="absolute left-0 mt-1 w-64 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-1.5 font-bold text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-100">
-                  Select Campus Facility
-                </div>
-                {campuses.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => {
-                      setSelectedCampus(c);
-                      setCampusDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3.5 py-2 hover:bg-slate-50 transition-colors flex items-center justify-between ${
-                      c === selectedCampus ? 'font-bold text-blue-600 bg-blue-50/50' : 'text-slate-700'
-                    }`}
-                  >
-                    <span>{c}</span>
-                    {c === selectedCampus && <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Institution / Campus Header Badge */}
+          <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-800 bg-slate-50 border border-slate-200/80 text-xs sm:text-sm font-semibold shadow-2xs">
+            <Landmark className="w-4 h-4 text-slate-700 flex-shrink-0" />
+            <span className="truncate">Jain (Deemed To Be) University</span>
           </div>
         </div>
 
@@ -147,7 +109,7 @@ export default function Navbar() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                   isActive
                     ? 'bg-white text-blue-600 shadow-sm border border-slate-200 font-extrabold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -174,14 +136,14 @@ export default function Navbar() {
           {/* Direct Emergency SOS Trigger Button */}
           <button
             onClick={openSosModal}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
+            className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
               isSafetyOfficer || activeSos
                 ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/30'
                 : 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/20'
             }`}
             title="Report Emergency / Broadcast SOS"
           >
-            <AlertOctagon className="w-3.5 h-3.5 text-white" />
+            <AlertOctagon className="w-4 h-4 text-white" />
             <span>SOS</span>
           </button>
 
