@@ -454,18 +454,6 @@ export default function MapCanvas({
             </div>
           )}
 
-          {/* Turn-by-Turn Instructions Icon Button */}
-          {onOpenInstructions && (
-            <button
-              onClick={onOpenInstructions}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-950/80 backdrop-blur-xl border border-white/[0.08] text-slate-300 hover:text-white hover:border-blue-500/40 shadow-xl transition-all cursor-pointer group"
-              title="View Turn-by-Turn Evacuation Instructions"
-            >
-              <ListOrdered className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
-              <span className="hidden md:inline">Instructions</span>
-            </button>
-          )}
-
           {/* Blueprint Opacity / Layer Toggle */}
           <div className="flex items-center bg-slate-950/80 backdrop-blur-xl p-1 px-2 rounded-full border border-white/[0.08] shadow-xl">
             <button

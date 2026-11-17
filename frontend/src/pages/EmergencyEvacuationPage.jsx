@@ -303,40 +303,8 @@ export default function EmergencyEvacuationPage() {
           </p>
         </div>
 
-        {/* Action Controls: Route Selector, Escape Simulation, SOS Button & Check-In */}
+        {/* Action Controls: Escape Simulation, Written Instructions & Check-In */}
         <div className="flex flex-wrap items-center gap-2">
-
-          {/* Quick Route Selector: Primary vs Alt Route Pills */}
-          {routeResult?.backup_path_node_ids && routeResult.backup_path_node_ids.length > 0 && (
-            <div className="flex items-center bg-slate-900/80 backdrop-blur-md border border-white/[0.08] rounded-full p-1 shadow-md">
-              <button
-                type="button"
-                onClick={() => setSelectedRoute('primary')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 ${
-                  selectedRoute === 'primary'
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Select Primary Recommended Route"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Primary</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRoute('backup')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 ${
-                  selectedRoute === 'backup'
-                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/30'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Select Alternative Safe Route"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                <span>Alt Route</span>
-              </button>
-            </div>
-          )}
           
           {/* Escape Simulation Button directly on Evacuation Map */}
           {!simRunning ? (
@@ -399,26 +367,6 @@ export default function EmergencyEvacuationPage() {
                 {steps.length}
               </span>
             )}
-          </button>
-
-          {/* Prominent SOS Button (Safety Officer generates, Student views) */}
-          <button
-            onClick={openSosModal}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider shadow-lg transition-all evac-btn-inset cursor-pointer ${
-              isSafetyOfficer
-                ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 active:from-red-700 active:to-rose-700 text-white shadow-red-600/35 ring-1 ring-red-400/50 animate-pulse'
-                : activeSos
-                  ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-red-600/35 ring-1 ring-red-400/50 animate-pulse'
-                  : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/[0.08] hover:border-red-500/40'
-            }`}
-            title={
-              isSafetyOfficer
-                ? "Broadcast Campus Emergency S.O.S. (Safety Officer)"
-                : (activeSos ? "View Active Campus S.O.S. Distress Signal" : "View Campus S.O.S. Status (Students View Only)")
-            }
-          >
-            <AlertOctagon className={`w-4 h-4 flex-shrink-0 ${isSafetyOfficer || activeSos ? 'fill-white text-red-600' : 'text-red-400'}`} />
-            <span>{isSafetyOfficer ? 'EMERGENCY S.O.S.' : (activeSos ? 'ACTIVE S.O.S.' : 'VIEW S.O.S.')}</span>
           </button>
 
           {/* Safe Arrival Check-In */}

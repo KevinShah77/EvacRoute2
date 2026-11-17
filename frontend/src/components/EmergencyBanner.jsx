@@ -98,50 +98,64 @@ export default function EmergencyBanner() {
         </div>
       )}
 
-      {/* Safety Broadcast Announcement Pop-Up Notification Card (Dismissible via top-right 'X') */}
+      {/* Safety Broadcast Announcement Pop-Up Modal (Centered at the Centre of the Screen with Top-Right 'X') */}
       {announcement && (
-        <div className="fixed top-28 sm:top-20 right-3 sm:right-6 max-w-md w-[calc(100%-1.5rem)] z-[60] p-4 sm:p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(59,130,246,0.35)] border border-blue-500/60 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 animate-in slide-in-from-top-3 duration-300">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start space-x-3 min-w-0">
-              <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 flex-shrink-0 mt-0.5 animate-pulse">
-                <AlertCircle className="w-5 h-5 text-white" />
+        <div 
+          className="fixed inset-0 z-[75] bg-black/75 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+          onClick={() => setAnnouncement(null)}
+        >
+          <div 
+            className="evac-card max-w-lg w-full p-5 sm:p-6 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(59,130,246,0.35)] border border-blue-500/60 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 relative animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top-Right Dismiss Cross Mark */}
+            <button
+              onClick={() => setAnnouncement(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800/80 transition-colors cursor-pointer"
+              title="Dismiss Announcement (Esc)"
+              aria-label="Dismiss Announcement"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-start space-x-3.5 min-w-0 pr-8">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 flex-shrink-0 mt-0.5 animate-pulse">
+                <AlertCircle className="w-6 h-6 text-white" />
               </div>
-              <div className="min-w-0 space-y-1">
+              <div className="min-w-0 space-y-1.5 flex-1">
                 <div className="flex items-center space-x-2 flex-wrap">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-500/30">
-                    Official Broadcast
+                  <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-950/80 px-2.5 py-0.5 rounded-full border border-blue-500/30">
+                    Official Campus Broadcast
                   </span>
                   {announcement.priority && (
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500/30">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-500/30">
                       {announcement.priority}
                     </span>
                   )}
                   <span className="text-[10px] text-slate-400">Just now</span>
                 </div>
-                <h4 className="font-black text-sm tracking-tight text-white leading-snug">
+                <h4 className="font-black text-base sm:text-lg tracking-tight text-white leading-snug">
                   {announcement.title || 'Campus Safety Directive'}
                 </h4>
-                <p className="text-[11px] text-blue-300/90 font-medium">
+                <p className="text-xs text-blue-300/90 font-medium">
                   Issued by <strong>{announcement.sender || 'Chief Safety Officer Sarah Jenkins'}</strong>
                 </p>
                 {announcement.message && (
-                  <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl mt-2">
-                    <p className="text-xs text-slate-200 leading-relaxed font-normal">
-                      {announcement.message}
-                    </p>
+                  <div className="p-3.5 bg-blue-950/40 border border-blue-500/25 rounded-xl mt-3 text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+                    {announcement.message}
                   </div>
                 )}
               </div>
             </div>
-            {/* Top-Right Dismiss Cross Mark */}
-            <button
-              onClick={() => setAnnouncement(null)}
-              className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800/80 flex-shrink-0 transition-colors cursor-pointer"
-              title="Dismiss Announcement"
-              aria-label="Dismiss Announcement"
-            >
-              <X className="w-5 h-5" />
-            </button>
+
+            <div className="mt-5 flex justify-end">
+              <button
+                onClick={() => setAnnouncement(null)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
+              >
+                Understood / Dismiss
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -166,11 +166,28 @@ export function EmergencyProvider({ children }) {
     }
   }, [userLocationNode, accessibleMode]);
 
+  // Load SOS requests for control panel
+  const loadSosRequests = useCallback(async () => {
+    try {
+      const data = await api.getSOSRequests();
+      setSosRequests(data);
+    } catch (e) {
+      console.warn('Could not load SOS requests:', e);
+    }
+  }, []);
+
   // Initial load
   useEffect(() => {
     refreshEmergencyState();
+    loadSosRequests();
     recalculateRoute('F2-208', false);
-  }, [refreshEmergencyState]);
+
+    // Keep SOS requests fresh
+    const sosInterval = setInterval(() => {
+      loadSosRequests();
+    }, 4000);
+    return () => clearInterval(sosInterval);
+  }, [refreshEmergencyState, loadSosRequests]);
 
   // When userLocationNode or accessibleMode changes, re-run route calculation
   useEffect(() => {
@@ -301,16 +318,6 @@ export function EmergencyProvider({ children }) {
       unsubSosStatus();
     };
   }, [refreshEmergencyState, recalculateRoute, loadTopology]);
-
-  // Load SOS requests for control panel
-  const loadSosRequests = useCallback(async () => {
-    try {
-      const data = await api.getSOSRequests();
-      setSosRequests(data);
-    } catch (e) {
-      console.warn('Could not load SOS requests:', e);
-    }
-  }, []);
 
   const sendSosSignal = useCallback(async (payload) => {
     try {

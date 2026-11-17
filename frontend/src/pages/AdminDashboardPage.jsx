@@ -82,6 +82,9 @@ export default function AdminDashboardPage() {
   const [announcementMsg, setAnnouncementMsg] = useState('All occupants proceed to designated emergency assembly points immediately.');
   const [announcementSending, setAnnouncementSending] = useState(false);
 
+  // Active Unresolved SOS Distress Signals
+  const activeSosRequests = (sosRequests || []).filter(s => s.status !== 'resolved');
+
   // Building Management states
   const [buildingFloorFilter, setBuildingFloorFilter] = useState('all');
   const [newNode, setNewNode] = useState({
@@ -102,11 +105,17 @@ export default function AdminDashboardPage() {
 
   const loadData = async () => {
     try {
+      await loadSosRequests();
+    } catch (e) {
+      console.warn('Failed to load SOS requests:', e);
+    }
+
+    try {
       const [sensorData, stats, hist, uStats, uList, exits] = await Promise.all([
-        api.getSensors(),
-        api.getNotificationStats(),
-        api.getEmergencyHistory(),
-        api.getUserStats(),
+        api.getSensors().catch(() => []),
+        api.getNotificationStats().catch(() => null),
+        api.getEmergencyHistory().catch(() => []),
+        api.getUserStats().catch(() => ({ total_students: 0, total_staff: 0, checked_in: 0 })),
         api.listUsers().catch(() => []),
         api.getOperationalExits().catch(() => [])
       ]);
@@ -116,7 +125,6 @@ export default function AdminDashboardPage() {
       setUserStats(uStats);
       setUsers(uList);
       setOperationalExits(exits);
-      await loadSosRequests();
     } catch (e) {
       console.warn('Failed to load admin stats:', e);
     }
@@ -404,6 +412,11 @@ export default function AdminDashboardPage() {
         >
           <Radio className="w-4 h-4" />
           <span>Operations & Hazards</span>
+          {activeSosRequests.length > 0 && (
+            <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full animate-pulse shadow-sm shadow-red-600/50">
+              {activeSosRequests.length}
+            </span>
+          )}
         </button>
 
         <button
@@ -540,52 +553,52 @@ export default function AdminDashboardPage() {
       {activeTab === 'operations' && (
         <div className="space-y-4">
           
-          {/* Active SOS Distress Signals Card */}
-          {sosRequests && sosRequests.filter(s => s.status !== 'resolved').length > 0 && (
-            <div className="bg-red-950/80 border-2 border-red-600 rounded-2xl p-4 shadow-2xl space-y-3">
+          {/* Active SOS Distress Signals Card (Permanently Visible) */}
+          {activeSosRequests.length > 0 ? (
+            <div className="bg-red-950/80 border-2 border-red-600 rounded-2xl p-4 shadow-2xl space-y-3 animate-in fade-in duration-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-white font-extrabold text-sm">
                   <AlertTriangle className="w-5 h-5 text-red-400 animate-bounce" />
-                  <span>URGENT: Incoming SOS Distress Calls ({sosRequests.filter(s => s.status !== 'resolved').length})</span>
+                  <span>URGENT: Incoming SOS Distress Calls ({activeSosRequests.length})</span>
                 </div>
-                <span className="text-[10px] bg-red-600 text-white font-bold px-2 py-0.5 rounded-full uppercase animate-pulse">
+                <span className="text-[10px] bg-red-600 text-white font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-md shadow-red-600/40">
                   Action Required
                 </span>
               </div>
 
               <div className="space-y-2">
-                {sosRequests.filter(s => s.status !== 'resolved').map((sos) => (
-                  <div key={sos.id} className="bg-slate-900/90 border border-red-500/50 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+                {activeSosRequests.map((sos) => (
+                  <div key={sos.id} className="bg-slate-900/90 border border-red-500/50 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
                     <div>
                       <div className="font-bold text-white flex items-center space-x-2">
-                        <span>{sos.user_name || 'Occupant'}</span>
-                        <span className="text-[10px] bg-red-900 text-red-300 px-1.5 py-0.5 rounded font-mono uppercase">
+                        <span className="text-sm">{sos.user_name || 'Occupant'}</span>
+                        <span className="text-[10px] bg-red-900/80 text-red-300 px-2 py-0.5 rounded font-mono uppercase font-bold border border-red-700/50">
                           {sos.situation}
                         </span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
                           sos.status === 'acknowledged' ? 'bg-emerald-950 text-emerald-400 border border-emerald-600/40' : 'bg-amber-950 text-amber-400 border border-amber-600/40'
                         }`}>
                           {sos.status}
                         </span>
                       </div>
-                      <div className="text-slate-300 text-[11px] mt-0.5">
-                        Location: <strong className="text-white">{sos.floor} • {sos.location}</strong> {sos.contact && `• Contact: ${sos.contact}`}
+                      <div className="text-slate-300 text-xs mt-1">
+                        Location: <strong className="text-white font-bold">{sos.floor} • {sos.location}</strong> {sos.contact && `• Contact: ${sos.contact}`}
                       </div>
-                      {sos.details && <div className="text-slate-400 text-[10px] mt-0.5 italic">"{sos.details}"</div>}
+                      {sos.details && <div className="text-slate-400 text-[11px] mt-1 italic bg-slate-950/60 p-1.5 px-2.5 rounded-lg border border-white/[0.04]">"{sos.details}"</div>}
                     </div>
 
                     <div className="flex items-center space-x-2">
                       {sos.status !== 'acknowledged' && (
                         <button
                           onClick={() => acknowledgeSosRequest(sos.id, user?.full_name || 'Safety Command')}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow transition-all"
+                          className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/30 transition-all cursor-pointer"
                         >
                           Acknowledge
                         </button>
                       )}
                       <button
                         onClick={() => resolveSosRequest(sos.id)}
-                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow transition-all"
+                        className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 transition-all cursor-pointer"
                       >
                         Mark Resolved
                       </button>
@@ -593,6 +606,21 @@ export default function AdminDashboardPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          ) : (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between text-xs">
+              <div className="flex items-center space-x-2.5">
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                  <CheckCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="font-bold text-white text-sm">Incoming Distress Signals (0)</span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">All campus sectors clear. No active distress signals reported.</p>
+                </div>
+              </div>
+              <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                All Sectors Clear
+              </span>
             </div>
           )}
 
