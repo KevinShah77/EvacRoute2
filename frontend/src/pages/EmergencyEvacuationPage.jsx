@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import MapCanvas from '../components/MapCanvas';
 import VoiceNavPanel from '../components/VoiceNavPanel';
 import LocationSelector from '../components/LocationSelector';
+import DistressSignalCard from '../components/DistressSignalCard';
 import QrScannerModal from '../components/QrScannerModal';
 import SosModal from '../components/SosModal';
 import { useEmergency } from '../context/EmergencyContext';
@@ -518,10 +519,11 @@ export default function EmergencyEvacuationPage() {
 
         </div>
 
-        {/* Right Column: Voice Guidance Panel & Location Selector */}
+        {/* Right Column: Voice Guidance Panel, Location Selector & Student Distress Signal */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-4">
           <VoiceNavPanel />
           <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
+          <DistressSignalCard />
         </div>
 
       </div>
