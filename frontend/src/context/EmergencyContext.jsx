@@ -171,6 +171,17 @@ export function EmergencyProvider({ children }) {
     try {
       const data = await api.getSOSRequests();
       setSosRequests(data);
+      // Synchronize latest active SOS distress signal across all clients
+      const latestActive = (data || []).find(s => s.status !== 'resolved');
+      if (latestActive) {
+        setActiveSos(prev => {
+          if (!prev || prev.id !== latestActive.id || prev.status !== latestActive.status) {
+            localStorage.setItem('evacroute_active_sos', JSON.stringify(latestActive));
+            return latestActive;
+          }
+          return prev;
+        });
+      }
     } catch (e) {
       console.warn('Could not load SOS requests:', e);
     }
@@ -265,6 +276,8 @@ export function EmergencyProvider({ children }) {
       console.log('[SOS Alert] New distress call received:', data);
       try { playEmergencySirenTone(); } catch {}
       setSosRequests(prev => [data, ...prev.filter(s => s.id !== data.id)]);
+      setActiveSos(data);
+      localStorage.setItem('evacroute_active_sos', JSON.stringify(data));
       setNotificationToast({
         id: Date.now(),
         type: 'danger',

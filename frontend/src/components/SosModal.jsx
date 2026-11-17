@@ -6,21 +6,20 @@ import {
   Send, 
   CheckCircle2, 
   Clock, 
-  UserCheck, 
   ShieldAlert, 
   PhoneCall, 
   Flame, 
-  Accessibility, 
-  HeartPulse, 
-  Wind,
-  RotateCcw
+  RotateCcw,
+  Radio,
+  ArrowLeft,
+  MapPin,
+  ChevronRight,
+  ShieldCheck,
+  Building
 } from 'lucide-react';
-import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useEmergency } from '../context/EmergencyContext';
 import { cleanRoomNumber } from '../context/VoiceNavigationContext';
-import { emergencyWS } from '../services/websocket';
-import { playEmergencySirenTone } from '../services/audioChime';
 
 export default function SosModal({ isOpen, onClose }) {
   const { user, role } = useAuth();
@@ -33,6 +32,8 @@ export default function SosModal({ isOpen, onClose }) {
     closeSosModal,
     activeSos,
     setActiveSos,
+    sosRequests = [],
+    activeEmergency,
     sendSosSignal,
     resolveSosRequest
   } = useEmergency();
@@ -40,6 +41,8 @@ export default function SosModal({ isOpen, onClose }) {
   const modalOpen = isOpen !== undefined ? isOpen : isSosModalOpen;
   const handleClose = onClose || closeSosModal;
 
+  // 'view' to view active SOS broadcast message, 'broadcast' for safety officer to transmit a new SOS
+  const [modalMode, setModalMode] = useState('view');
   const [situation, setSituation] = useState('fire'); // 'fire' | 'structural'
   const [details, setDetails] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -62,6 +65,27 @@ export default function SosModal({ isOpen, onClose }) {
 
   if (!modalOpen) return null;
 
+  // Determine current active SOS record (activeSos, or latest pending from sosRequests, or latest request)
+  const currentSos = activeSos 
+    || (sosRequests || []).find(s => s.status !== 'resolved')
+    || (sosRequests || [])[0]
+    || null;
+
+  // Derive the active SOS broadcast message
+  const sosMessageText = currentSos?.details 
+    || (currentSos?.situation === 'structural'
+        ? `EMERGENCY S.O.S. BROADCAST: Structural damage and corridor breach detected on ${currentSos?.floor || selectedFloor || 'Floor 2'}. Immediate evacuation required. Avoid compromised sectors and follow designated green paths.`
+        : currentSos?.situation === 'BLOCKED' || currentSos?.situation === 'trapped'
+          ? `EMERGENCY S.O.S. BROADCAST: Occupant distress signal active at ${currentSos?.floor || selectedFloor || 'Floor 2'} • ${currentSos?.location || 'Seminar Room 208'}. First responders dispatched. All adjacent occupants evacuate immediately.`
+          : activeEmergency?.description
+            || `EMERGENCY S.O.S. BROADCAST: Confirmed active fire condition reported at ${activeEmergency?.location || 'Room 205'} on ${activeEmergency?.floor || 'Floor 2'}. All occupants proceed immediately to designated emergency assembly points.`);
+
+  const broadcastAuthor = currentSos?.user_name 
+    || 'Chief Safety Officer Sarah Jenkins';
+
+  const broadcastFloor = currentSos?.floor || activeEmergency?.floor || selectedFloor || 'Floor 2';
+  const broadcastLocation = currentSos?.location || activeEmergency?.location || 'Room 205';
+
   const handleSubmit = async (e) => {
     e?.preventDefault();
     if (!isSafetyOfficer) {
@@ -80,6 +104,7 @@ export default function SosModal({ isOpen, onClose }) {
         user_role: 'admin',
         contact: user?.phone || '+1-555-019-SAFE'
       });
+      setModalMode('view');
     } catch (err) {
       alert(`Error transmitting SOS: ${err.message}`);
     } finally {
@@ -87,180 +112,216 @@ export default function SosModal({ isOpen, onClose }) {
     }
   };
 
-  // SOS alerts strictly for Fire or Structural Damage
+  // SOS situation options strictly for Fire or Structural Damage
   const situationOptions = [
     { 
       id: 'fire', 
       label: 'Active Fire Emergency', 
       icon: Flame, 
-      desc: 'Active flames, heat, or spreading fire in this sector' 
+      desc: 'Active flames, extreme heat, or spreading smoke' 
     },
     { 
       id: 'structural', 
       label: 'Structural Damage / Collapse', 
       icon: AlertTriangle, 
-      desc: 'Wall breach, ceiling collapse, or structural integrity failure' 
+      desc: 'Wall breach, ceiling collapse, or structural failure' 
     },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white max-w-lg w-full rounded-xl border border-slate-200 shadow-xl overflow-hidden p-5 sm:p-6 relative text-slate-900">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white max-w-lg w-full rounded-2xl border border-slate-200 shadow-2xl overflow-hidden p-5 sm:p-6 relative text-slate-900 animate-in fade-in-50 zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-red-100 text-red-700">
-              <AlertOctagon className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-red-600 text-white shadow-xs flex-shrink-0">
+              <AlertOctagon className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-slate-900 tracking-tight">
-                {isSafetyOfficer ? 'Campus Emergency S.O.S.' : 'Campus S.O.S. Monitor'}
-              </h3>
-              <p className="text-xs text-slate-500">
-                {isSafetyOfficer 
-                  ? 'Immediate distress broadcast for active fire or structural damage'
-                  : 'Broadcasts reserved for Safety Officers • Monitored life-safety channel'}
+              <div className="flex items-center space-x-2">
+                <h3 className="font-black text-base text-slate-900 tracking-tight uppercase">
+                  Campus Emergency S.O.S.
+                </h3>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-200">
+                  {currentSos?.status === 'acknowledged' ? 'Responders En Route' : 'Live Alert'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Official Life-Safety Emergency Distress Broadcast
               </p>
             </div>
           </div>
-          <button onClick={handleClose} title="Close SOS Modal" aria-label="Close SOS Modal" className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+          <button 
+            onClick={handleClose} 
+            title="Close S.O.S. Modal" 
+            aria-label="Close S.O.S. Modal" 
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* ================= ACTIVE TRANSMITTED STATE ================= */}
-        {activeSos ? (
+        {/* ================= MODAL MODE: VIEW OFFICIAL S.O.S. MESSAGE ================= */}
+        {modalMode === 'view' ? (
           <div className="py-4 space-y-4">
-            <div className={`p-3.5 rounded-lg border text-sm flex items-start space-x-3 ${
-              activeSos.status === 'acknowledged'
-                ? 'bg-emerald-50 border-emerald-200 text-slate-800'
-                : 'bg-red-50 border-red-200 text-slate-800'
-            }`}>
-              {activeSos.status === 'acknowledged' ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-              ) : (
-                <Clock className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5 animate-spin" />
-              )}
-              <div>
-                <h4 className="font-bold text-sm text-slate-900">
-                  {activeSos.status === 'acknowledged' 
-                    ? 'SOS ACKNOWLEDGED – RESCUE EN ROUTE' 
-                    : 'SOS TRANSMITTED – DISPATCHING FIRST RESPONDERS'}
-                </h4>
-                <p className="text-xs mt-1 leading-relaxed text-slate-600">
-                  {activeSos.status === 'acknowledged' 
-                    ? `Safety Command "${activeSos.acknowledged_by || 'Campus Security'}" has acknowledged the distress signal. Rescue units are advancing to the coordinates.`
-                    : 'Distress signal and room coordinates are broadcast to Security Operations Center. First responders are actively en route.'
-                  }
-                </p>
+
+            {/* 1. THE OFFICIAL S.O.S. BROADCAST MESSAGE BOX */}
+            <div className="bg-red-50/90 border-2 border-red-500 rounded-xl p-4 text-slate-900 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-red-800 bg-red-200/80 border border-red-300 px-2 py-0.5 rounded">
+                    S.O.S. BROADCAST MESSAGE
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-200">
+                  {currentSos?.status === 'acknowledged'
+                    ? 'ACKNOWLEDGED'
+                    : currentSos?.status === 'pending'
+                      ? 'PENDING DISPATCH'
+                      : 'ACTIVE'}
+                </span>
+              </div>
+
+              {/* The actual broadcasted SOS message text */}
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-red-950 text-sm font-semibold leading-relaxed shadow-2xs">
+                "{sosMessageText}"
+              </div>
+
+              {/* Key broadcast metadata */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-red-200/80 text-xs">
+                <div>
+                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Incident</span>
+                  <span className="font-bold text-red-700 uppercase">
+                    {currentSos?.situation || activeEmergency?.emergency_type || 'Fire Emergency'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Hazard Sector</span>
+                  <span className="font-bold text-slate-900">
+                    {broadcastFloor} • {broadcastLocation}
+                  </span>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Target Assembly</span>
+                  <span className="font-bold text-emerald-700">
+                    Safe Assembly Point 3
+                  </span>
+                </div>
+              </div>
+
+              {/* Origin attribution */}
+              <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1 border-t border-red-100">
+                <span>Broadcast Author: <strong className="text-slate-800">{broadcastAuthor}</strong></span>
+                <span className="font-mono text-[10px] text-slate-500">
+                  {currentSos?.created_at ? new Date(currentSos.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Real-time'}
+                </span>
               </div>
             </div>
 
-            {/* Life-Safety Advice Box */}
-            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs space-y-2">
-              <span className="font-bold text-amber-800 uppercase tracking-wider block">Immediate Life-Safety Instructions:</span>
-              <ul className="list-disc list-inside space-y-1 text-slate-600">
-                <li>Stay low to the ground where breathable air settles.</li>
-                <li>Seal door cracks with clothing or damp fabrics to block smoke.</li>
-                <li>Do NOT open doors if the knob feels hot to the touch.</li>
-                <li>Wave a bright object or phone flashlight at any exterior window.</li>
+            {/* 2. IMMEDIATE LIFE-SAFETY PROTOCOLS */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-2">
+              <span className="font-bold text-slate-900 uppercase tracking-wider block flex items-center space-x-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Immediate Life-Safety Protocols</span>
+              </span>
+              <ul className="list-disc list-inside space-y-1 text-slate-600 leading-relaxed">
+                <li>Follow the primary highlighted green evacuation route on your campus map.</li>
+                <li>Stay low to the ground where breathable air settles if smoke is encountered.</li>
+                <li>Do <strong>NOT</strong> attempt to use elevators under any circumstances.</li>
+                <li>Proceed directly to Safe Assembly Point 3 (North Campus Plaza) for headcount check-in.</li>
               </ul>
             </div>
 
-            {/* Location & Details Snapshot */}
-            <div className="space-y-1.5 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Emergency Situation:</span>
-                <span className="font-bold text-red-700 uppercase tracking-wide">
-                  {activeSos.situation === 'structural' 
-                    ? 'Structural Damage / Collapse' 
-                    : activeSos.situation === 'BLOCKED' || activeSos.situation === 'trapped'
-                      ? 'Trapped in Room'
-                      : 'Active Fire Emergency'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Transmitted Location:</span>
-                <span className="font-bold text-slate-900">{activeSos.floor} • {activeSos.location}</span>
-              </div>
-              {activeSos.user_name && (
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Transmitted By:</span>
-                  <span className="font-semibold text-blue-700">{activeSos.user_name}</span>
+            {/* 3. SAFETY OFFICER CONTROLS (IF SAFETY OFFICER) */}
+            {isSafetyOfficer && (
+              <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl flex items-center justify-between gap-2 text-xs">
+                <div className="space-y-0.5">
+                  <span className="font-bold text-amber-900 block">Safety Officer Incident Controls</span>
+                  <span className="text-amber-700 text-[11px]">You have authorization to broadcast or resolve campus SOS alerts.</span>
                 </div>
-              )}
-              {activeSos.details && (
-                <div className="pt-1 border-t border-slate-200 text-slate-600 text-[11px]">
-                  <span className="text-slate-500">Details: </span>{activeSos.details}
-                </div>
-              )}
-            </div>
-
-            {isSafetyOfficer ? (
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={handleClose}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold cursor-pointer"
+                    onClick={() => setModalMode('broadcast')}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs shadow-xs transition-colors cursor-pointer flex items-center space-x-1"
                   >
-                    Close Window
+                    <Radio className="w-3.5 h-3.5" />
+                    <span>Broadcast New S.O.S.</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      if (setActiveSos) setActiveSos(null);
-                      localStorage.removeItem('evacroute_active_sos');
-                    }}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-amber-700 rounded-lg text-xs font-semibold flex items-center space-x-1 cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Send New SOS</span>
-                  </button>
+                  {currentSos?.id && currentSos.status !== 'resolved' && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          await resolveSosRequest(currentSos.id);
+                          handleClose();
+                        } catch (e) {
+                          console.warn('Could not resolve SOS:', e);
+                          handleClose();
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition-colors cursor-pointer"
+                    >
+                      Resolve S.O.S.
+                    </button>
+                  )}
                 </div>
-
-                <button
-                  onClick={async () => {
-                    try {
-                      await resolveSosRequest(activeSos.id);
-                      handleClose();
-                    } catch (e) {
-                      console.warn('Could not resolve SOS:', e);
-                      handleClose();
-                    }
-                  }}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs cursor-pointer"
-                >
-                  Mark Rescued / Cancel
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <span className="text-xs text-slate-500">
-                  Viewing active emergency SOS status broadcast by Campus Safety Command.
-                </span>
-                <button
-                  onClick={handleClose}
-                  className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
-                >
-                  Close Window
-                </button>
               </div>
             )}
-          </div>
-        ) : isSafetyOfficer ? (
-          /* ================= SAFETY OFFICER TRANSMIT SOS FORM ================= */
-          <div className="py-3.5 space-y-3.5">
-            
-            {/* Auto-detected location summary pill */}
-            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
-              <span className="text-slate-500">Current Fixed Location:</span>
-              <span className="font-bold text-slate-900">{selectedFloor} • {roomLabel}</span>
+
+            {/* 4. EMERGENCY DISPATCH HOTLINE & FIRST RESPONDERS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+              <a
+                href="tel:+15550197233"
+                className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-colors cursor-pointer shadow-xs"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>Call Safety Dispatch</span>
+              </a>
+              <a
+                href="tel:000"
+                className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors cursor-pointer shadow-xs"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>Emergency Services (000/911)</span>
+              </a>
             </div>
 
-            {/* 1-Click Situation Selector */}
+            {/* Footer Close */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <span className="text-[11px] text-slate-500">
+                EvacRoute Campus Life-Safety Dispatch Network
+              </span>
+              <button
+                onClick={handleClose}
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs cursor-pointer transition-colors"
+              >
+                Close Window
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* ================= MODAL MODE: BROADCAST NEW S.O.S. (SAFETY OFFICER ONLY) ================= */
+          <div className="py-4 space-y-4">
+            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Originating Fixed Location</span>
+                <span className="font-bold text-slate-900">{selectedFloor || 'Floor 2'} • {roomLabel}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalMode('view')}
+                className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Message</span>
+              </button>
+            </div>
+
+            {/* Emergency Situation Selector */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Select Your Emergency Situation:
+              <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                Select Emergency Situation:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {situationOptions.map(opt => {
@@ -271,7 +332,7 @@ export default function SosModal({ isOpen, onClose }) {
                       key={opt.id}
                       type="button"
                       onClick={() => setSituation(opt.id)}
-                      className={`p-3 rounded-lg border text-left transition-colors flex items-start space-x-2.5 cursor-pointer ${
+                      className={`p-3 rounded-xl border text-left transition-colors flex items-start space-x-2.5 cursor-pointer ${
                         isSelected
                           ? 'bg-red-50 border-red-500 text-red-950 ring-1 ring-red-400'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -290,81 +351,41 @@ export default function SosModal({ isOpen, onClose }) {
 
             {/* Optional Short Description */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Additional Details (Optional):
+              <label className="block text-xs font-bold text-slate-800 mb-1">
+                Custom Broadcast Directives / Details (Optional):
               </label>
               <input
                 type="text"
-                placeholder="e.g., 2 occupants trapped, heavy smoke near door"
+                placeholder="e.g., Heavy smoke in corridor, avoid east staircase, assemble at North Plaza"
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500"
               />
             </div>
 
             {/* Large Red Transmit Button */}
-            <div className="pt-1">
+            <div className="pt-2">
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="w-full py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white rounded-lg font-bold text-xs tracking-wider uppercase shadow-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white rounded-xl font-bold text-xs tracking-wider uppercase shadow-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
               >
                 <AlertOctagon className="w-4 h-4" />
-                <span>{submitting ? 'Transmitting Distress Signal...' : 'TRANSMIT EMERGENCY SOS NOW'}</span>
+                <span>{submitting ? 'Broadcasting S.O.S. Signal...' : 'TRANSMIT CAMPUS S.O.S. BROADCAST NOW'}</span>
               </button>
             </div>
 
-            {/* Direct 24/7 Phone Fallback */}
-            <div className="flex items-center justify-center space-x-2 text-[11px] text-slate-500 pt-0.5">
-              <PhoneCall className="w-3.5 h-3.5 text-red-500" />
-              <span>Campus Police Emergency Dispatch: <strong className="text-slate-800">+1-555-019-SAFE</strong></span>
-            </div>
-
-          </div>
-        ) : (
-          /* ================= STUDENT VIEW-ONLY S.O.S. STATUS PANEL ================= */
-          <div className="py-3.5 space-y-3.5">
-            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-2">
-              <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm">
-                <ShieldAlert className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                <span>Campus SOS Monitor</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Campus SOS broadcasts are reserved for Safety Officers. To report immediate life safety hazards, contact Campus Security at <strong className="text-slate-900 font-mono">+1-555-019-SAFE</strong>. If you are trapped in a room, submit an Occupant Distress Signal in the sidebar.
-              </p>
-            </div>
-
-            {/* Location snapshot */}
-            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
-              <span className="text-slate-500">Your Current Monitored Location:</span>
-              <span className="font-bold text-slate-900">{selectedFloor} • {roomLabel}</span>
-            </div>
-
-            {/* Life safety guidance for occupants */}
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs space-y-1 text-red-950">
-              <span className="font-bold uppercase tracking-wider block text-red-800">If You Require Immediate Rescue:</span>
-              <p className="text-red-900/90 leading-relaxed">
-                If you are trapped or in danger, immediately dial Campus Emergency Dispatch or pull the nearest wall fire alarm. Stay low to the floor and seal doors against smoke.
-              </p>
-            </div>
-
-            {/* Direct Dispatch Phone Hotline */}
-            <div className="flex items-center justify-center space-x-2 text-xs text-slate-700 py-1 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
-              <PhoneCall className="w-4 h-4 text-red-600 flex-shrink-0" />
-              <span>Campus Emergency Dispatch: <strong className="text-slate-900 font-mono">+1-555-019-SAFE</strong></span>
-            </div>
-
-            {/* Close Action Button */}
-            <div className="pt-1 flex items-center justify-between">
-              <span className="text-[11px] text-slate-500">
-                Switch to Command mode to test Safety Officer SOS transmission.
-              </span>
+            <div className="flex items-center justify-between text-xs pt-1">
               <button
-                onClick={handleClose}
-                className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
+                type="button"
+                onClick={() => setModalMode('view')}
+                className="text-slate-500 hover:text-slate-800 font-semibold cursor-pointer"
               >
-                Close Window
+                Cancel
               </button>
+              <span className="text-[11px] text-slate-400">
+                Broadcasts immediately update all connected occupant maps.
+              </span>
             </div>
           </div>
         )}
