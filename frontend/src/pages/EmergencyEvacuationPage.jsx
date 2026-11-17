@@ -354,16 +354,14 @@ export default function EmergencyEvacuationPage() {
             </div>
           </div>
 
-          {/* View Details Button - Strictly restricted to Admin / Safety Officer */}
-          {isSafetyOfficer && (
-            <button
-              onClick={() => setIsEmergencyDetailsOpen(true)}
-              className="flex-shrink-0 inline-flex items-center justify-center space-x-1.5 px-4.5 py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs sm:text-sm font-bold rounded-lg shadow-xs transition-colors cursor-pointer"
-            >
-              <span>View Details</span>
-              <ChevronRight className="w-4 h-4 ml-0.5" />
-            </button>
-          )}
+          {/* View Details Button (Sleek Reference Design Proportions) */}
+          <button
+            onClick={() => setIsEmergencyDetailsOpen(true)}
+            className="flex-shrink-0 inline-flex items-center justify-center space-x-1 px-3.5 py-1.5 bg-[#DC2626] hover:bg-[#B91C1C] active:bg-[#991B1B] text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer"
+          >
+            <span>View Details</span>
+            <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+          </button>
         </div>
       )}
 
@@ -784,9 +782,9 @@ export default function EmergencyEvacuationPage() {
       )}
 
       {/* ============================================================== */}
-      {/* EMERGENCY INCIDENT DETAILS MODAL (VIEW DETAILS - ADMIN ONLY)   */}
+      {/* EMERGENCY INCIDENT DETAILS MODAL (VIEW DETAILS)                 */}
       {/* ============================================================== */}
-      {isEmergencyDetailsOpen && isSafetyOfficer && (
+      {isEmergencyDetailsOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
           onClick={() => setIsEmergencyDetailsOpen(false)}
