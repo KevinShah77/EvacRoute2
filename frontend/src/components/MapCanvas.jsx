@@ -292,7 +292,7 @@ export default function MapCanvas({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full ${className || 'h-[640px] sm:h-[720px] lg:h-[780px] xl:h-[840px]'} evac-card rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden select-none flex flex-col`}
+      className={`relative w-full ${className || 'h-[680px] sm:h-[760px] lg:h-[820px] xl:h-[880px] min-h-[640px]'} evac-card rounded-2xl border border-white/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.4),0_16px_36px_-12px_rgba(0,0,0,0.6)] overflow-hidden select-none flex flex-col`}
     >
       {/* ================= GOOGLE MAPS STYLE MOBILE NAVIGATION BANNER ================= */}
       <div className="absolute top-2 left-2 right-2 sm:hidden z-40 pointer-events-auto bg-slate-950/85 backdrop-blur-xl border border-emerald-500/40 rounded-2xl p-2.5 shadow-2xl flex items-center justify-between gap-2 text-white">
@@ -448,6 +448,18 @@ export default function MapCanvas({
                 </button>
               )}
             </div>
+          )}
+
+          {/* Turn-by-Turn Instructions Icon Button */}
+          {onOpenInstructions && (
+            <button
+              onClick={onOpenInstructions}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-950/80 backdrop-blur-xl border border-white/[0.08] text-slate-300 hover:text-white hover:border-blue-500/40 shadow-xl transition-all cursor-pointer group"
+              title="View Turn-by-Turn Evacuation Instructions"
+            >
+              <ListOrdered className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+              <span className="hidden md:inline">Instructions</span>
+            </button>
           )}
 
           {/* Blueprint Opacity / Layer Toggle */}

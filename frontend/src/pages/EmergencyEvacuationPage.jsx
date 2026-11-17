@@ -421,7 +421,7 @@ export default function EmergencyEvacuationPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
         
         {/* Left Column: Interactive Vector Floor Map with Expanded Dimensions */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+        <div className="lg:col-span-8 xl:col-span-8 space-y-4">
           
           {/* Interactive Map with Expanded Dimensions and Animated Escape Simulation Marker */}
           <MapCanvas 
@@ -429,13 +429,13 @@ export default function EmergencyEvacuationPage() {
             onOpenSosModal={openSosModal}
             onOpenInstructions={() => setIsInstructionsModalOpen(true)}
             simulationCoord={markerPos}
-            className="h-[650px] sm:h-[720px] lg:h-[800px] xl:h-[860px]"
+            className="h-[680px] sm:h-[760px] lg:h-[840px] xl:h-[880px] min-h-[640px]"
           />
 
         </div>
 
         {/* Right Column: Voice Guidance Panel, Location Selector & Student Distress Signal */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-4">
+        <div className="lg:col-span-4 xl:col-span-4 space-y-4">
           <VoiceNavPanel />
           <LocationSelector onOpenQrModal={() => setIsQrModalOpen(true)} />
           <DistressSignalCard />

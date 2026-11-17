@@ -100,10 +100,12 @@ export default function SosModal({ isOpen, onClose }) {
             </div>
             <div>
               <h3 className="font-extrabold text-lg text-white tracking-tight">
-                CAMPUS EMERGENCY S.O.S.
+                {isSafetyOfficer ? 'CAMPUS EMERGENCY S.O.S.' : 'CAMPUS S.O.S. MONITOR'}
               </h3>
               <p className="text-xs text-red-300">
-                Immediate distress broadcast for active fire or structural damage
+                {isSafetyOfficer 
+                  ? 'Immediate distress broadcast for active fire or structural damage'
+                  : 'Broadcasts reserved for Safety Officers • Monitored life-safety channel'}
               </p>
             </div>
           </div>
@@ -286,10 +288,10 @@ export default function SosModal({ isOpen, onClose }) {
             <div className="bg-slate-950/80 p-4 rounded-xl border border-white/[0.08] space-y-2.5">
               <div className="flex items-center space-x-2 text-blue-400 font-bold text-sm">
                 <ShieldAlert className="w-5 h-5 flex-shrink-0" />
-                <span>Campus S.O.S. Status: Monitored</span>
+                <span>Campus SOS Monitor</span>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Students can view active SOS broadcasts. To ensure emergency dispatch authenticity, only <strong>Campus Safety Officers</strong> are authorized to generate new emergency S.O.S. broadcast alerts.
+                Campus SOS broadcasts are reserved for Safety Officers. To report immediate life safety hazards, contact Campus Security at <strong className="text-red-300 font-mono">+1-555-019-SAFE</strong>. If you are trapped in a room, submit an Occupant Distress Signal in the sidebar.
               </p>
             </div>
 

@@ -89,24 +89,29 @@ export default function EmergencyBanner() {
 
       {/* Safety Broadcast Announcement Pop-Up Notification Card (Dismissible via top-right 'X') */}
       {announcement && (
-        <div className="fixed top-20 right-3 sm:right-6 max-w-md w-[calc(100%-1.5rem)] z-50 p-4 sm:p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_30px_rgba(59,130,246,0.3)] border border-blue-500/50 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 animate-in slide-in-from-top-3 duration-300">
+        <div className="fixed top-20 right-3 sm:right-6 max-w-md w-[calc(100%-1.5rem)] z-50 p-4 sm:p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(59,130,246,0.35)] border border-blue-500/60 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 animate-in slide-in-from-top-3 duration-300">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start space-x-3 min-w-0">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 flex-shrink-0 mt-0.5 animate-pulse">
                 <AlertCircle className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0 space-y-1">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-wrap">
                   <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-500/30">
                     Official Broadcast
                   </span>
+                  {announcement.priority && (
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500/30">
+                      {announcement.priority}
+                    </span>
+                  )}
                   <span className="text-[10px] text-slate-400">Just now</span>
                 </div>
                 <h4 className="font-black text-sm tracking-tight text-white leading-snug">
                   {announcement.title || 'Campus Safety Directive'}
                 </h4>
                 <p className="text-[11px] text-blue-300/90 font-medium">
-                  Issued by <strong>{announcement.sender || 'Chief Safety Officer'}</strong>
+                  Issued by <strong>{announcement.sender || 'Chief Safety Officer Sarah Jenkins'}</strong>
                 </p>
                 <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl mt-2">
                   <p className="text-xs text-slate-200 leading-relaxed font-normal">
@@ -120,6 +125,7 @@ export default function EmergencyBanner() {
               onClick={() => setAnnouncement(null)}
               className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800/80 flex-shrink-0 transition-colors cursor-pointer"
               title="Dismiss Announcement"
+              aria-label="Dismiss Announcement"
             >
               <X className="w-5 h-5" />
             </button>
