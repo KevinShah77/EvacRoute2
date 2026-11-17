@@ -296,7 +296,11 @@ export default function MapCanvas({
     >
       {/* ================= GOOGLE MAPS STYLE MOBILE NAVIGATION BANNER ================= */}
       <div className="absolute top-2 left-2 right-2 sm:hidden z-40 pointer-events-auto bg-slate-950/85 backdrop-blur-xl border border-emerald-500/40 rounded-2xl p-2.5 shadow-2xl flex items-center justify-between gap-2 text-white">
-        <div className="flex items-center space-x-2.5 min-w-0">
+        <div 
+          onClick={onOpenInstructions || undefined} 
+          className={`flex items-center space-x-2.5 min-w-0 ${onOpenInstructions ? 'cursor-pointer active:opacity-80' : ''}`}
+          title={onOpenInstructions ? "Tap to view full turn-by-turn written instructions" : undefined}
+        >
           <div className={`p-2 rounded-xl flex-shrink-0 shadow-md ${routeResult?.safe_route_found ? 'bg-emerald-600' : 'bg-red-600 animate-bounce'}`}>
             <Navigation className="w-4 h-4 text-white" />
           </div>
@@ -487,18 +491,8 @@ export default function MapCanvas({
             )}
           </div>
 
-          {/* Zoom & View Controls + Directions Pop-Up Trigger */}
+          {/* Zoom & View Controls */}
           <div className="flex items-center space-x-0.5 bg-slate-950/80 backdrop-blur-xl p-1 px-1.5 rounded-full border border-white/[0.08] shadow-xl">
-            {onOpenInstructions && (
-              <button
-                onClick={onOpenInstructions}
-                className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors flex items-center space-x-1"
-                title="View Turn-by-Turn Instructions"
-              >
-                <ListOrdered className="w-4 h-4 text-blue-400" />
-                <span className="text-[11px] font-semibold pr-1 hidden lg:inline">Steps</span>
-              </button>
-            )}
             <button
               onClick={centerOnUser}
               className="p-1.5 text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-colors"

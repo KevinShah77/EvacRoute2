@@ -28,12 +28,24 @@ import {
   X
 } from 'lucide-react';
 
-// Clean raw node tokens like "F2-208" or "F1-105" from written instructions
+// Clean raw node tokens like "F2-208" or "GF-E-MAIN" into human-readable instructions
 function cleanInstructionText(text) {
   if (!text) return '';
   return text
-    .replace(/\b(F\d+|GF)-/gi, 'Room ')
-    .replace(/\b(F\d+|GF)\b/gi, '')
+    // Replace room codes like F2-208 or GF-005 with Room 208 / Room 005
+    .replace(/\b(?:F\d+|GF)-(\d+[A-Za-z]?)\b/gi, 'Room $1')
+    // Replace stair node codes like F2-STAIRS-EAST with East Stairs
+    .replace(/\b(?:F\d+|GF)-STAIRS?-(EAST|WEST|NORTH|SOUTH|NW|NE|SW|SE)\b/gi, '$1 Stairs')
+    // Replace exit node codes like GF-E-MAIN with Main Exit
+    .replace(/\b(?:F\d+|GF)-E-(MAIN|WEST|NORTH|SOUTH)\b/gi, '$1 Exit')
+    // Replace corridor codes like F2-C-EAST with East Corridor
+    .replace(/\b(?:F\d+|GF)-C-(EAST|WEST|NORTH|SOUTH|NW|NE|SW|SE)\b/gi, '$1 Corridor')
+    // Replace standalone floor abbreviations like F2 -> Floor 2, GF -> Ground Floor
+    .replace(/\bF(\d+)\b/gi, 'Floor $1')
+    .replace(/\bGF\b/gi, 'Ground Floor')
+    // Clean any remaining raw floor prefixes before letters or words
+    .replace(/\b(?:F\d+|GF)-/gi, '')
+    // Clean up duplicate spaces
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -73,6 +85,17 @@ export default function EmergencyEvacuationPage() {
 
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
+
+  // Close written instructions modal with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isInstructionsModalOpen) {
+        setIsInstructionsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isInstructionsModalOpen]);
 
   // ================= ESCAPE SIMULATION STATE ON EVACUATION MAP =================
   const [simRunning, setSimRunning] = useState(false);
@@ -256,7 +279,7 @@ export default function EmergencyEvacuationPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-4 sm:space-y-6">
+    <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-4 sm:space-y-6">
       
       {/* Top Banner / Heading & Action Bar - Mallow Clean Styling */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-white/[0.06]">

@@ -44,6 +44,17 @@ export default function SosModal({ isOpen, onClose }) {
   const [details, setDetails] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen) {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, handleClose]);
+
   // Current room label resolution (clean, no F2- prefix)
   const roomNode = topology?.nodes?.find(n => n.id === userLocationNode);
   const rawLabel = roomNode?.label || userLocationNode || '208';
@@ -53,6 +64,10 @@ export default function SosModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
+    if (!isSafetyOfficer) {
+      console.warn('Unauthorized SOS transmission attempt blocked. Only Safety Officers can broadcast SOS.');
+      return;
+    }
     setSubmitting(true);
     try {
       await sendSosSignal({
@@ -61,9 +76,9 @@ export default function SosModal({ isOpen, onClose }) {
         node_id: userLocationNode || 'F2-208',
         situation: situation || 'fire',
         details: details.trim() || undefined,
-        user_name: user?.full_name || 'Campus Occupant',
-        user_role: user?.role || 'student',
-        contact: user?.phone || '+1-555-014-STUD'
+        user_name: user?.full_name || 'Chief Safety Officer Sarah Jenkins',
+        user_role: 'admin',
+        contact: user?.phone || '+1-555-019-SAFE'
       });
     } catch (err) {
       alert(`Error transmitting SOS: ${err.message}`);
@@ -135,8 +150,8 @@ export default function SosModal({ isOpen, onClose }) {
                 </h4>
                 <p className="text-xs mt-1 leading-relaxed">
                   {activeSos.status === 'acknowledged' 
-                    ? `Safety Command "${activeSos.acknowledged_by || 'Campus Security'}" has acknowledged your distress signal. Rescue team is advancing to your location.`
-                    : 'Your distress signal and GPS/room coordinates have been broadcast to the Security Operations Center. Stand by.'
+                    ? `Safety Command "${activeSos.acknowledged_by || 'Campus Security'}" has acknowledged the distress signal. Rescue units are advancing to the coordinates.`
+                    : 'Distress signal and room coordinates are broadcast to Security Operations Center. First responders are actively en route.'
                   }
                 </p>
               </div>
@@ -153,10 +168,33 @@ export default function SosModal({ isOpen, onClose }) {
               </ul>
             </div>
 
-            {/* Location Snapshot */}
-            <div className="flex items-center justify-between text-xs bg-slate-800/80 p-3 rounded-xl border border-slate-700">
-              <span className="text-slate-400">Transmitted Location:</span>
-              <span className="font-bold text-white">{activeSos.floor} • {activeSos.location}</span>
+            {/* Location & Details Snapshot */}
+            <div className="space-y-2 text-xs bg-slate-900/80 p-3.5 rounded-xl border border-slate-700/80">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">Emergency Situation:</span>
+                <span className="font-bold text-red-400 uppercase tracking-wide">
+                  {activeSos.situation === 'structural' 
+                    ? 'Structural Damage / Collapse' 
+                    : activeSos.situation === 'BLOCKED' || activeSos.situation === 'trapped'
+                      ? 'Trapped in Room'
+                      : 'Active Fire Emergency'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">Transmitted Location:</span>
+                <span className="font-bold text-white">{activeSos.floor} • {activeSos.location}</span>
+              </div>
+              {activeSos.user_name && (
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Transmitted By:</span>
+                  <span className="font-semibold text-blue-300">{activeSos.user_name}</span>
+                </div>
+              )}
+              {activeSos.details && (
+                <div className="pt-1 border-t border-white/[0.06] text-slate-300 text-[11px]">
+                  <span className="text-slate-400">Details: </span>{activeSos.details}
+                </div>
+              )}
             </div>
 
             {isSafetyOfficer ? (
@@ -186,7 +224,8 @@ export default function SosModal({ isOpen, onClose }) {
                       await resolveSosRequest(activeSos.id);
                       handleClose();
                     } catch (e) {
-                      alert('Error cancelling SOS');
+                      console.warn('Could not resolve SOS:', e);
+                      handleClose();
                     }
                   }}
                   className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer"

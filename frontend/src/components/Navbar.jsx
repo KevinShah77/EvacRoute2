@@ -48,7 +48,7 @@ export default function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/[0.07] shadow-lg shadow-black/20">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
             {/* Logo & Emergency Pulse */}

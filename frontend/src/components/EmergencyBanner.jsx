@@ -18,6 +18,17 @@ export default function EmergencyBanner() {
     return () => clearTimeout(timer);
   }, [notificationToast, setNotificationToast]);
 
+  // Keyboard shortcut listener to dismiss announcement with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && announcement) {
+        setAnnouncement(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [announcement, setAnnouncement]);
+
   // Audio & vibration alert + native browser notification pop-up
   useEffect(() => {
     if (!notificationToast) return;
@@ -89,7 +100,7 @@ export default function EmergencyBanner() {
 
       {/* Safety Broadcast Announcement Pop-Up Notification Card (Dismissible via top-right 'X') */}
       {announcement && (
-        <div className="fixed top-20 right-3 sm:right-6 max-w-md w-[calc(100%-1.5rem)] z-50 p-4 sm:p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(59,130,246,0.35)] border border-blue-500/60 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 animate-in slide-in-from-top-3 duration-300">
+        <div className="fixed top-28 sm:top-20 right-3 sm:right-6 max-w-md w-[calc(100%-1.5rem)] z-[60] p-4 sm:p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_30px_rgba(59,130,246,0.35)] border border-blue-500/60 bg-slate-950/95 backdrop-blur-2xl text-slate-100 ring-1 ring-blue-400/40 animate-in slide-in-from-top-3 duration-300">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start space-x-3 min-w-0">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/40 flex-shrink-0 mt-0.5 animate-pulse">
@@ -113,11 +124,13 @@ export default function EmergencyBanner() {
                 <p className="text-[11px] text-blue-300/90 font-medium">
                   Issued by <strong>{announcement.sender || 'Chief Safety Officer Sarah Jenkins'}</strong>
                 </p>
-                <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl mt-2">
-                  <p className="text-xs text-slate-200 leading-relaxed font-normal">
-                    {announcement.message}
-                  </p>
-                </div>
+                {announcement.message && (
+                  <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl mt-2">
+                    <p className="text-xs text-slate-200 leading-relaxed font-normal">
+                      {announcement.message}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             {/* Top-Right Dismiss Cross Mark */}

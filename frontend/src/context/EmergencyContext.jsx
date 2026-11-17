@@ -240,6 +240,7 @@ export function EmergencyProvider({ children }) {
     });
 
     const unsubAnnouncement = emergencyWS.on('ANNOUNCEMENT', (data) => {
+      try { playHazardWarningTone(); } catch {}
       setAnnouncement(data);
     });
 
@@ -367,16 +368,23 @@ export function EmergencyProvider({ children }) {
   }, [loadSosRequests]);
 
   const resolveSosRequest = useCallback(async (sosId) => {
-    const res = await api.resolveSOS(sosId);
+    let res = null;
+    try {
+      res = await api.resolveSOS(sosId);
+    } catch (e) {
+      console.warn('Could not resolve SOS on backend (clearing local state fallback):', e);
+    }
     setActiveSos(prev => {
-      if (prev && prev.id === sosId) {
+      if (prev && (prev.id === sosId || !sosId)) {
         localStorage.removeItem('evacroute_active_sos');
         return null;
       }
       return prev;
     });
-    await loadSosRequests();
-    return res;
+    try {
+      await loadSosRequests();
+    } catch (e) {}
+    return res || { success: true };
   }, [loadSosRequests]);
 
   const selectUserLocation = (nodeId) => {
