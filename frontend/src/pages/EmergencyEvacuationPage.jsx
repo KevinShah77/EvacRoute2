@@ -920,23 +920,12 @@ export default function EmergencyEvacuationPage() {
                 <PhoneCall className="w-3.5 h-3.5" />
                 <span>Call Safety Dispatch</span>
               </a>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => {
-                    setIsEmergencyDetailsOpen(false);
-                    openSosModal();
-                  }}
-                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer"
-                >
-                  Transmit SOS
-                </button>
-                <button
-                  onClick={() => setIsEmergencyDetailsOpen(false)}
-                  className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-lg font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
+              <button
+                onClick={() => setIsEmergencyDetailsOpen(false)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
