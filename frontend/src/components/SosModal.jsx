@@ -359,18 +359,18 @@ export default function SosModal({ isOpen, onClose }) {
             {/* 4. EMERGENCY DISPATCH HOTLINE & FIRST RESPONDERS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
               <a
-                href="tel:+15550197233"
+                href="tel:+918027577198"
                 className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-colors cursor-pointer shadow-xs"
               >
                 <PhoneCall className="w-4 h-4" />
                 <span>Call Safety Dispatch</span>
               </a>
               <a
-                href="tel:000"
+                href="tel:100"
                 className="flex items-center justify-center space-x-2 p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors cursor-pointer shadow-xs"
               >
                 <PhoneCall className="w-4 h-4" />
-                <span>Emergency Services (000/911)</span>
+                <span>Emergency Services (100)</span>
               </a>
             </div>
 

@@ -364,7 +364,7 @@ export default function DistressSignalCard() {
               <PhoneCall className="w-3 h-3 text-red-500" />
               <span>Police Emergency:</span>
             </span>
-            <strong className="text-slate-800 font-mono">+1-555-019-SAFE</strong>
+            <strong className="text-slate-800 font-mono">100</strong>
           </div>
 
         </form>

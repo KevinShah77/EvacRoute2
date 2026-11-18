@@ -472,93 +472,95 @@ export default function EmergencyEvacuationPage() {
             />
           </div>
 
-          {/* Repositioned Operational Action Sections: Quick Actions & Important Contacts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            {/* 1. Quick Actions Card */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
-                <Info className="w-4 h-4 text-slate-700" />
-                <h3 className="text-sm font-bold text-slate-900">Quick Actions</h3>
+          {/* Repositioned Operational Action Sections: Quick Actions & Important Contacts (Occupant Dashboard Only) */}
+          {!isSafetyOfficer && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              {/* 1. Quick Actions Card */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
+                <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+                  <Info className="w-4 h-4 text-slate-700" />
+                  <h3 className="text-sm font-bold text-slate-900">Quick Actions</h3>
+                </div>
+
+                <div className="mt-3.5 space-y-2.5">
+                  <button
+                    onClick={openSosModal}
+                    className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-lg text-xs sm:text-sm font-bold transition-colors shadow-xs cursor-pointer"
+                  >
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Report an Incident</span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsInstructionsModalOpen(true)}
+                    className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <Navigation className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Get Evacuation Route</span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsQrModalOpen(true)}
+                    className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-slate-600" />
+                    <span>Share My Location</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="mt-3.5 space-y-2.5">
-                <button
-                  onClick={openSosModal}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-lg text-xs sm:text-sm font-bold transition-colors shadow-xs cursor-pointer"
-                >
-                  <AlertTriangle className="w-4 h-4" />
-                  <span>Report an Incident</span>
-                </button>
+              {/* 2. Important Contacts Card */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
+                <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+                  <PhoneCall className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-sm font-bold text-slate-900">Important Contacts</h3>
+                </div>
 
-                <button
-                  onClick={() => setIsInstructionsModalOpen(true)}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-2xs cursor-pointer"
-                >
-                  <Navigation className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Get Evacuation Route</span>
-                </button>
+                <div className="mt-3.5 space-y-2.5 text-xs text-slate-700">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <div className="flex items-center space-x-2.5">
+                      <PhoneCall className="w-4 h-4 text-slate-700" />
+                      <span className="font-semibold text-slate-800">Campus Security</span>
+                    </div>
+                    <a 
+                      href="tel:+918027577198" 
+                      className="font-mono font-bold text-blue-600 hover:underline"
+                    >
+                      +91 80 2757 7198
+                    </a>
+                  </div>
 
-                <button
-                  onClick={() => setIsQrModalOpen(true)}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-2xs cursor-pointer"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Share My Location</span>
-                </button>
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <div className="flex items-center space-x-2.5">
+                      <PhoneCall className="w-4 h-4 text-red-600" />
+                      <span className="font-semibold text-slate-800">Emergency Services</span>
+                    </div>
+                    <a 
+                      href="tel:100" 
+                      className="font-mono font-bold text-red-600 hover:underline"
+                    >
+                      100
+                    </a>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <div className="flex items-center space-x-2.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span className="font-semibold text-slate-800">Student Health Dispatch</span>
+                    </div>
+                    <a 
+                      href="tel:+918027577196" 
+                      className="font-mono font-bold text-emerald-700 hover:underline"
+                    >
+                      +91 80 2757 7196
+                    </a>
+                  </div>
+                </div>
               </div>
+
             </div>
-
-            {/* 2. Important Contacts Card */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
-                <PhoneCall className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-bold text-slate-900">Important Contacts</h3>
-              </div>
-
-              <div className="mt-3.5 space-y-2.5 text-xs text-slate-700">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <div className="flex items-center space-x-2.5">
-                    <PhoneCall className="w-4 h-4 text-slate-700" />
-                    <span className="font-semibold text-slate-800">Campus Security</span>
-                  </div>
-                  <a 
-                    href="tel:+61212345678" 
-                    className="font-mono font-bold text-blue-600 hover:underline"
-                  >
-                    +61 2 1234 5678
-                  </a>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <div className="flex items-center space-x-2.5">
-                    <PhoneCall className="w-4 h-4 text-red-600" />
-                    <span className="font-semibold text-slate-800">Emergency Services</span>
-                  </div>
-                  <a 
-                    href="tel:000" 
-                    className="font-mono font-bold text-red-600 hover:underline"
-                  >
-                    000 / 911
-                  </a>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <div className="flex items-center space-x-2.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span className="font-semibold text-slate-800">Student Health Dispatch</span>
-                  </div>
-                  <a 
-                    href="tel:+15550194325" 
-                    className="font-mono font-bold text-emerald-700 hover:underline"
-                  >
-                    +1 555 019 4325
-                  </a>
-                </div>
-              </div>
-            </div>
-
-          </div>
+          )}
 
         </div>
 
@@ -609,33 +611,35 @@ export default function EmergencyEvacuationPage() {
           <DistressSignalCard />
 
           {/* ============================================================== */}
-          {/* CARD 3: SAFETY INSTRUCTIONS (MATCHING REFERENCE IMAGE)         */}
+          {/* CARD 3: SAFETY INSTRUCTIONS (Occupant Dashboard Only)          */}
           {/* ============================================================== */}
-          <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
-              <Info className="w-4 h-4 text-blue-600" />
-              <h3 className="text-sm font-bold text-slate-900">Safety Instructions</h3>
-            </div>
+          {!isSafetyOfficer && (
+            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center space-x-2 pb-3 border-b border-slate-100">
+                <Info className="w-4 h-4 text-blue-600" />
+                <h3 className="text-sm font-bold text-slate-900">Safety Instructions</h3>
+              </div>
 
-            <ul className="mt-3.5 space-y-2.5 text-xs text-slate-700">
-              <li className="flex items-start space-x-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <span>Evacuate the affected area immediately</span>
-              </li>
-              <li className="flex items-start space-x-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <span>Follow marked evacuation routes</span>
-              </li>
-              <li className="flex items-start space-x-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <span>Report any hazards to campus security</span>
-              </li>
-              <li className="flex items-start space-x-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <span>Proceed directly to the nearest safe zone</span>
-              </li>
-            </ul>
-          </div>
+              <ul className="mt-3.5 space-y-2.5 text-xs text-slate-700">
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span>Evacuate the affected area immediately</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span>Follow marked evacuation routes</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span>Report any hazards to campus security</span>
+                </li>
+                <li className="flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span>Proceed directly to the nearest safe zone</span>
+                </li>
+              </ul>
+            </div>
+          )}
 
         </div>
 
@@ -901,11 +905,11 @@ export default function EmergencyEvacuationPage() {
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="text-slate-500 block text-[10px]">Campus Police / Dispatch</span>
-                    <strong className="text-slate-900 font-mono">+1-555-019-SAFE</strong>
+                    <strong className="text-slate-900 font-mono">+91 80 2757 7198</strong>
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="text-slate-500 block text-[10px]">Emergency Services</span>
-                    <strong className="text-slate-900 font-mono">000 / 911</strong>
+                    <strong className="text-slate-900 font-mono">100</strong>
                   </div>
                 </div>
               </div>
@@ -914,7 +918,7 @@ export default function EmergencyEvacuationPage() {
             {/* Modal Footer */}
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
               <a
-                href="tel:+15550197233"
+                href="tel:+918027577198"
                 className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs flex items-center space-x-1.5 transition-colors shadow-xs"
               >
                 <PhoneCall className="w-3.5 h-3.5" />

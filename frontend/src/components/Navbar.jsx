@@ -133,20 +133,6 @@ export default function Navbar() {
 
           <div className="hidden sm:block h-4 w-px bg-slate-200"></div>
 
-          {/* Direct Emergency SOS Trigger Button */}
-          <button
-            onClick={openSosModal}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
-              isSafetyOfficer || activeSos
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/30'
-                : 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/20'
-            }`}
-            title="Report Emergency / Broadcast SOS"
-          >
-            <AlertOctagon className="w-4 h-4 text-white" />
-            <span>SOS</span>
-          </button>
-
           {/* User Profile & Demo Role Switcher Dropdown */}
           <div className="relative">
             <button
